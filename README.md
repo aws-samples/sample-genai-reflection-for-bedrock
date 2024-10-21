@@ -38,6 +38,8 @@ print(response)
 
 > You can also pass an initialised `boto3` client instance to `BedrockHive` otherwise the client will attempt to be initialised using the `AWS_PROFILE` environment variable.
 
+> You should expect the pipeline to scale linearly with the # reflections as these calls must happen in serial but you should not see any dramatic increases as you scale the # models.
+
 ## Contributors
 
 Chat to [`@jackbtlr`](https://phonetool.amazon.com/users/jackbtlr) if you have feature suggestions or bug report.
