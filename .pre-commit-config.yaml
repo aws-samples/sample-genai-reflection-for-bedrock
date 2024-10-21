@@ -1,0 +1,33 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-case-conflict
+      - id: check-merge-conflict
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.21
+    hooks:
+      - id: validate-pyproject
+
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.26.0
+    hooks:
+      - id: typos
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.0
+    hooks:
+      - id: ruff
+        args: [--exit-non-zero-on-fix, --config=pyproject.toml]
+        exclude: ^{{cookiecutter.project_name}}
+      - id: ruff-format
+        args: [--config=pyproject.toml]
+        exclude: ^{{cookiecutter.project_name}}
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.12.0
+    hooks:
+      - id: mypy
