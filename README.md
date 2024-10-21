@@ -1,6 +1,6 @@
 # 🐝 BedrockHive
 
-A configurable extension to Bedrock text generation, focused on enhancing performance ...
+A configurable extension to Bedrock text generation, focused on enhancing reasoning performance.
 
 ## 📦 Installation
 
@@ -8,18 +8,39 @@ Follow the [package registry guidance](https://quip-amazon.com/DHVAAHndixT7/GitL
 
 Then install the library:
 ```bash
-pip install X # TBD
+pip install bedrock_hive
 ```
 
 ## 💬 Usage
 
-The model must support conversation history to be used, `Jurassic-2 Ultra` does not ...
+**NOTE** The model must support conversation history to be used, this rules out certain models such as `Jurassic-2 Ultra` which do not have this capability.
 
-... small example
+```python
+from botocore.config import Config
+from bhive import BedrockHive, HiveConfig
+
+client_config = Config(region_name="us-east-1", connect_timeout=120, read_timeout=120, retries={"max_attempts": 5})
+
+models = ["anthropic.claude-3-sonnet-20240229-v1:0", "mistral.mistral-large-2402-v1:0"]
+n_reflections = 2
+aggregator_model = models[0]
+
+bhive_client = BedrockHive(client_config=client_config)
+bhive_config = HiveConfig(
+    bedrock_model_ids=models,
+    num_reflections=n_reflections,
+    aggregator_model_id=aggregator_model,
+)
+
+response = bhive_client.converse("What is 2 + 2?", bhive_config)
+print(response)
+```
+
+> You can also pass an initialised `boto3` client instance to `BedrockHive` otherwise the client will attempt to be initialised using the `AWS_PROFILE` environment variable.
 
 ## Contributors
 
-Chat to [`@jackbtlr`](https://phonetool.amazon.com/users/jackbtlr) if you have feature suggestions or bug report ...
+Chat to [`@jackbtlr`](https://phonetool.amazon.com/users/jackbtlr) if you have feature suggestions or bug report.
 
 ### UV
 
@@ -42,6 +63,7 @@ uv run pytest -v # running tests (with verbose flag)
 ### Logging
 
 Logging is handled via [`loguru`](https://github.com/Delgan/loguru) as it's very simple to use and sufficient for most use cases. It is by default set to the `INFO` level but developers can change it to `DEBUG` by running the following snippet locally:
+
 ```python
 from loguru import logger
 

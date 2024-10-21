@@ -1,8 +1,10 @@
 [project]
-name = "bhive"
-version = "0.1.0"
+name = "bedrock_hive"
+version = "0.1.0-alpha"
 description = "Library for enabling test-time-compute augmentations in Bedrock"
-authors = []
+authors = [
+    {name = "Jack Butler", email = "jackbtlr@amazon.com"},
+]
 license = { text = "Amazon Software License" }
 dependencies = [
     "boto3>=1.35.39",
@@ -18,6 +20,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["bhive"]
 
 [tool.uv]
 dev-dependencies = [
