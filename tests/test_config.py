@@ -3,7 +3,8 @@ from bhive.config import HiveConfig
 
 
 @pytest.mark.parametrize(
-    "model_ids", [(["FAKE_MODEL"]), (["claude_model_123"]), (["claude_model_123", "anthropic_new_model"])]
+    "model_ids",
+    [(["FAKE_MODEL"]), (["claude_model_123"]), (["claude_model_123", "anthropic_new_model"])],
 )
 def should_allow_arbitrary_modelids(model_ids: list[str]):
     hive_config = HiveConfig(

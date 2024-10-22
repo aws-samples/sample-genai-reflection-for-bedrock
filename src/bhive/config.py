@@ -24,7 +24,7 @@ class HiveConfig(pydantic.BaseModel):
     @pydantic.model_validator(mode="after")
     def validate_configuration(self: "HiveConfig") -> "HiveConfig":
         if self.n_models > 1 and not self.aggregator_model_id:
-            logger.warning("We recommend an aggregator_model when using multiple models to aggregate a final response.")
+            logger.warning("We recommend a final aggregator_model when using multiple models.")
         if self.aggregator_model_id and self.n_models == 1:
             logger.warning("No need for an aggregator_model when using a single model.")
         return self

@@ -1,8 +1,13 @@
+import sys
 import os
 import dotenv
 import streamlit as st
 from botocore.config import Config
 from bhive import BedrockHive, HiveConfig
+from loguru import logger
+
+logger.remove()
+logger.add(sys.stderr, level="DEBUG")
 
 dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
 dotenv.load_dotenv(dotenv_path)
@@ -12,7 +17,12 @@ AVAILABLE_MODELS = [
     "mistral.mistral-large-2402-v1:0",
     "amazon.titan-text-premier-v1:0",
 ]
-BEDROCK_CONFIG = Config(region_name="us-east-1", connect_timeout=120, read_timeout=120, retries={"max_attempts": 5})
+BEDROCK_CONFIG = Config(
+    region_name="us-east-1",
+    connect_timeout=120,
+    read_timeout=120,
+    retries={"max_attempts": 5},
+)
 
 client = BedrockHive(client_config=BEDROCK_CONFIG)
 
@@ -26,7 +36,8 @@ n_reflections = st.slider("Number of reflection / debate rounds:", 0, 10, 2)
 aggregator_model = None
 if 1 < len(models):
     aggregator_model = st.selectbox(
-        "Choose a model to aggregate responses:", options=[aggregator_model] + AVAILABLE_MODELS
+        "Choose a model to aggregate responses:",
+        options=[aggregator_model] + AVAILABLE_MODELS,
     )
 
 if st.button("Submit"):

@@ -37,7 +37,7 @@ dev-dependencies = [
 ]
 
 [tool.ruff]
-line-length = 120
+line-length = 100
 target-version = "py39"
 extend-include = ["*.ipynb"]
 exclude = [

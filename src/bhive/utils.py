@@ -11,10 +11,14 @@ def parse_bedrock_output(response: dict) -> str:
     return replies[0]["text"]
 
 
-def parallel_bedrock_exec(func: Callable, model_ids: list[str], chathistory: dict[str, list[dict]]) -> dict:
+def parallel_bedrock_exec(
+    func: Callable, model_ids: list[str], chathistory: dict[str, list[dict]]
+) -> dict:
     outputs = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-        future_to_input = {executor.submit(func, mo, me): mo for mo, me in zip(model_ids, chathistory.values())}
+        future_to_input = {
+            executor.submit(func, mo, me): mo for mo, me in zip(model_ids, chathistory.values())
+        }
         for future in concurrent.futures.as_completed(future_to_input):
             mo = future_to_input[future]
             try:
