@@ -10,9 +10,15 @@ wheels/
 .venv
 .ruff**/
 .mypy**/
+.pytest**/
 *.lock
 .python-version
 .env
+
+# Static files
 *.json
 *.prof
 *png
+
+# Sphinx
+_build/

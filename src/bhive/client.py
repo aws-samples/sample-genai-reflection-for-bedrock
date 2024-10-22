@@ -9,7 +9,42 @@ _RUNTIME_CLIENT_NAME = "bedrock-runtime"
 
 
 class BedrockHive:
+    """
+    A class for enhancing reasoning capabilities by leveraging multiple models
+    and maintaining conversation history.
+
+    Attributes:
+        runtime_client (boto3.Client): The Boto3 client used to communicate
+            with the Bedrock runtime service.
+
+    Parameters:
+        client_config (botocore.config.Config | None):
+            Configuration for the Boto3 client. If provided, a new client
+            will be created using this configuration.
+        client (boto3.Client | None):
+            An existing Boto3 client. If provided, it will be used directly
+            instead of creating a new client. Only one of `client_config`
+            or `client` should be provided.
+
+    Raises:
+        ValueError: If both `client_config` and `client` are provided, or if
+            neither is provided.
+    """
+
     def __init__(self, client_config: Config | None = None, client=None) -> None:
+        """Initializes a BedrockHive instance connected to a Boto3 client.
+
+        This constructor either creates a new Boto3 client using the provided
+        `client_config` or uses the existing `client`.
+
+        Parameters:
+            client_config (botocore.config.Config | None): Configuration for the Boto3 client.
+            client (boto3.Client | None): Existing Boto3 client.
+
+        Raises:
+            ValueError: If both `client_config` and `client` are provided,
+                or if neither is provided.
+        """
         if client and client_config:
             raise ValueError("Only one of client or client_config should be provided.")
         if client_config:
@@ -20,6 +55,21 @@ class BedrockHive:
             raise ValueError("Either client_config or client must be provided.")
 
     def converse(self, message: str, config: config.HiveConfig, **converse_kwargs) -> chat.HiveOutput:
+        """Invokes conversation with BedrockHive using inference parameters.
+
+        This method sends a message to the configured models and processes
+        their responses based on the provided configuration.
+
+        Parameters:
+            message (str): A message or task to be solved by the models.
+            config (config.HiveConfig): An inference configuration that outlines
+                the models to be used, the number of rounds of reflection/debate,
+                and the choice of aggregation model.
+
+        Returns:
+            chat.HiveOutput: A response object containing the answer and
+                chat history.
+        """
         chatlog = chat.ChatLog(config.bedrock_model_ids)
         for m in config.bedrock_model_ids:
             chatlog.add_user_msg(message, m)
@@ -51,6 +101,7 @@ class BedrockHive:
                 agg_msg = prompt.aggregate
                 for recent_ans in answers:
                     agg_msg += f"\n\n One agent response: ```{recent_ans}```"
+                agg_msg += f"\n\n As a reminder, the original question is {message}"
                 fmt_msg = chatlog.wrap_user_msg(agg_msg)
                 logger.info(f"Aggregating a final response using {config.aggregator_model_id=}")
                 response = self._converse(config.aggregator_model_id, [fmt_msg])
@@ -64,10 +115,12 @@ class BedrockHive:
             logger.info(f"Calling {modelid} with {config.num_reflections} rounds of self-reflection")
             for n_reflect in range(config.num_reflections + 1):
                 if 0 < n_reflect:
-                    chatlog.add_user_msg(prompt.reflect, modelid)
+                    reflect_msg = prompt.reflect
+                    reflect_msg += f"\n\n As a reminder, the original question is {message}"
+                    chatlog.add_user_msg(reflect_msg, modelid)
                 answer = _converse_func(model_id=modelid, messages=chatlog.history[modelid])
                 chatlog.add_assistant_msg(answer, modelid)
-            response = [m[-1]["content"][0]["text"] for m in chatlog.history.values()]
+            response = chatlog.history[modelid][-1]["content"][0]["text"]
 
         else:
             # multi model + multi round debate
@@ -82,6 +135,7 @@ class BedrockHive:
                             # NOTE could alternatively summarise messages
                             debate_msg += f"\n\n One agent response: ```{recent_ans}```"
                         debate_msg += f"\n\n {prompt.careful}"
+                        debate_msg += f"\n\n As a reminder, the original question is {message}"
                         logger.debug(f"Sending request to {modelid}:\n{debate_msg}")
                         chatlog.add_user_msg(debate_msg, modelid)
 
@@ -99,6 +153,7 @@ class BedrockHive:
                 agg_msg = prompt.aggregate
                 for recent_ans in answers:
                     agg_msg += f"\n\n One agent response: ```{recent_ans}```"
+                agg_msg += f"\n\n As a reminder, the original question is {message}"
                 fmt_msg = chatlog.wrap_user_msg(agg_msg)
                 logger.info(f"Aggregating a final response using {config.aggregator_model_id=}")
                 response = self._converse(config.aggregator_model_id, [fmt_msg])
