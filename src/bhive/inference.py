@@ -1,0 +1,97 @@
+from typing import Callable
+from loguru import logger
+from bhive import chat, prompt
+from bhive.config import HiveConfig
+from bhive.utils import parallel_bedrock_exec
+
+
+def aggregate_last_responses(
+    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str
+) -> str:
+    last_answers = [m[-1]["content"][0]["text"] for m in chatlog.history.values()]
+    agg_msg = prompt.aggregate + "\n\n"
+    agg_msg += "\n\n".join(f"One agent response: ```{ans}```" for ans in last_answers)
+    agg_msg += f"\n\nAs a reminder, the original question is {message}"
+    fmt_msg = chatlog.wrap_user_msg(agg_msg)
+    logger.info(f"Aggregating a final response using {config.aggregator_model_id=}")
+    return _converse_func(config.aggregator_model_id, [fmt_msg])
+
+
+def single_model_single_call(
+    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable
+) -> str:
+    modelid = config.bedrock_model_ids[0]
+    logger.info(f"Calling {modelid} with no self-reflection")
+    answer = _converse_func(model_id=modelid, messages=chatlog.history[modelid])
+    chatlog.add_assistant_msg(answer, modelid)
+    return answer
+
+
+def multi_model_single_call(
+    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str
+) -> str | list[str]:
+    logger.info(f"Calling {config.bedrock_model_ids} with no self-reflection")
+    answers = parallel_bedrock_exec(
+        _converse_func,
+        model_ids=config.bedrock_model_ids,
+        chathistory=chatlog.history,
+    )
+    for modelid, answer in answers.items():
+        chatlog.add_assistant_msg(answer, modelid)
+
+    response: str | list[str] = [m[-1]["content"][0]["text"] for m in chatlog.history.values()]
+    if config.aggregator_model_id:
+        # aggregate an answer
+        response = aggregate_last_responses(config, chatlog, _converse_func, message)
+    return response
+
+
+def single_model_multi_call(
+    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str
+) -> str:
+    modelid = config.bedrock_model_ids[0]
+    logger.info(f"Calling {modelid} with {config.num_reflections} rounds of self-reflection")
+    for n_reflect in range(config.num_reflections + 1):
+        if 0 < n_reflect:
+            reflect_msg = prompt.reflect
+            reflect_msg += f"\n\n As a reminder, the original question is {message}"
+            chatlog.add_user_msg(reflect_msg, modelid)
+        answer = _converse_func(model_id=modelid, messages=chatlog.history[modelid])
+        chatlog.add_assistant_msg(answer, modelid)
+    response = chatlog.history[modelid][-1]["content"][0]["text"]
+    return response
+
+
+def multi_model_multi_call(
+    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str
+) -> str | list[str]:
+    logger.info(f"Calling {config.bedrock_model_ids} with {config.num_reflections} rounds")
+    for n_reflect in range(config.num_reflections + 1):
+        if 0 < n_reflect:
+            # consider others & debate
+            for modelid in config.bedrock_model_ids:
+                recent_other_answers = chatlog.get_recent_other_answers(modelid)
+                debate_msg = prompt.debate
+                for recent_ans in recent_other_answers:
+                    # NOTE could alternatively summarise messages
+                    answer_text = recent_ans["content"][0]["text"]
+                    debate_msg += f"\n\n One agent response: ```{answer_text}```"
+                debate_msg += f"\n\n {prompt.careful}"
+                debate_msg += f"\n\n As a reminder, the original question is {message}"
+                logger.debug(f"Sending request to {modelid}:\n{debate_msg}")
+                chatlog.add_user_msg(debate_msg, modelid)
+
+        logger.info(f"Fetching debate #{n_reflect+1} answers from all {config.bedrock_model_ids=}")
+        answers = parallel_bedrock_exec(
+            _converse_func,
+            model_ids=config.bedrock_model_ids,
+            chathistory=chatlog.history,
+        )
+        for modelid, answer in answers.items():
+            chatlog.add_assistant_msg(answer, modelid)
+
+    response: str | list[str] = [m[-1]["content"][0]["text"] for m in chatlog.history.values()]
+    if config.aggregator_model_id:
+        # aggregate an answer
+        response = aggregate_last_responses(config, chatlog, _converse_func, message)
+    return response

@@ -20,14 +20,11 @@ from bhive import BedrockHive, HiveConfig
 client_config = Config(region_name="us-east-1", connect_timeout=120, read_timeout=120, retries={"max_attempts": 5})
 
 models = ["anthropic.claude-3-sonnet-20240229-v1:0", "mistral.mistral-large-2402-v1:0"]
-n_reflections = 2
-aggregator_model = models[0]
-
 bhive_client = BedrockHive(client_config=client_config)
 bhive_config = HiveConfig(
     bedrock_model_ids=models,
-    num_reflections=n_reflections,
-    aggregator_model_id=aggregator_model,
+    num_reflections=2,
+    aggregator_model_id=models[0]
 )
 
 response = bhive_client.converse("What is 2 + 2?", bhive_config)

@@ -49,7 +49,7 @@ if st.button("Submit"):
         )
         response = client.converse(user_input, _config)
         st.subheader("Final Answer")
-        st.write(response.responses)
+        st.write(response.response)
 
         st.subheader("History")
         for m, msgs in response.chat_history.items():

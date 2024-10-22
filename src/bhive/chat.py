@@ -3,7 +3,7 @@ import pydantic
 
 
 class HiveOutput(pydantic.BaseModel):
-    responses: str | list[str]
+    response: str | list[str]
     chat_history: dict[str, list[dict]]
 
 
