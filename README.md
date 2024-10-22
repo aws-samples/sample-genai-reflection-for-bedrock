@@ -17,10 +17,10 @@ pip install bedrock_hive
 from botocore.config import Config
 from bhive import BedrockHive, HiveConfig
 
-client_config = Config(region_name="us-east-1", connect_timeout=120, read_timeout=120, retries={"max_attempts": 5})
+client_config = Config(region_name="us-east-1", retries={"max_attempts": 5})
+bhive_client = BedrockHive(client_config=client_config)
 
 models = ["anthropic.claude-3-sonnet-20240229-v1:0", "mistral.mistral-large-2402-v1:0"]
-bhive_client = BedrockHive(client_config=client_config)
 bhive_config = HiveConfig(
     bedrock_model_ids=models,
     num_reflections=2,
