@@ -26,7 +26,8 @@ build_pages:
   stage: docs
   script:
     - pip install sphinx sphinx-rtd-theme
-    - sphinx-build -b html docs public
+    - pip install .
+    - sphinx-build -b html docs public # deploy to gitlab pages
   artifacts:
     paths:
       - public
