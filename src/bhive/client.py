@@ -83,19 +83,25 @@ class BedrockHive:
         response: str | list[str] | None = None
         if config.single_model_single_call:
             # single model call
-            response = inference.single_model_single_call(config, chatlog, _converse_func)
+            response, chatlog = inference.single_model_single_call(config, chatlog, _converse_func)
 
         elif config.multi_model_single_call:
             # multi model / single round debate
-            response = inference.multi_model_single_call(config, chatlog, _converse_func, message)
+            response, chatlog = inference.multi_model_single_call(
+                config, chatlog, _converse_func, message
+            )
 
         elif config.single_model_multi_call:
             # single model but reflection
-            response = inference.single_model_multi_call(config, chatlog, _converse_func, message)
+            response, chatlog = inference.single_model_multi_call(
+                config, chatlog, _converse_func, message
+            )
 
         else:
             # multi model + multi round debate
-            response = inference.multi_model_multi_call(config, chatlog, _converse_func, message)
+            response, chatlog = inference.multi_model_multi_call(
+                config, chatlog, _converse_func, message
+            )
 
         logger.info(f"Retrieved final answer of {response}")
         return chat.HiveOutput(response=response, chat_history=chatlog.history)

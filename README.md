@@ -24,7 +24,7 @@ models = ["anthropic.claude-3-sonnet-20240229-v1:0", "mistral.mistral-large-2402
 bhive_config = HiveConfig(
     bedrock_model_ids=models,
     num_reflections=2,
-    aggregator_model_id=models[0]
+    aggregator_model_id="anthropic.claude-3-sonnet-20240229-v1:0"
 )
 
 response = bhive_client.converse("What is 2 + 2?", bhive_config)

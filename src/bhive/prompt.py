@@ -4,15 +4,15 @@ The original task description is {task}.
 """
 
 debate = """
-These are the recent/updated opinions from other agents:
+These are the recent answers to the same question from other agents:
 """
 
 reflect = """
-Can you verify that your answer is correct. Please reiterate your answer, making sure to state your answer at the end of the response.
+Can you verify that your answer is correct. Please reiterate your answer by thinking step by step, making sure to state your answer at the end of the response.
 """
 
 careful = """
-Use these opinions carefully as additional advice, can you provide an updated answer? Make sure to state your answer at the end of the response.
+Use these opinions carefully as additional advice and examining each solution step by step, can you provide an updated answer? Make sure to state your answer at the end of the response.
 """
 
 aggregate = """
