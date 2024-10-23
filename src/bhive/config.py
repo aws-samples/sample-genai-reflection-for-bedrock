@@ -1,11 +1,23 @@
 import pydantic
+from typing import Callable
 from bhive import logger
 
 
 class HiveConfig(pydantic.BaseModel):
+    """
+    Configuration class for Hive, managing model settings and validation.
+
+    Attributes:
+        bedrock_model_ids (list[str]): A list of Bedrock model identifiers.
+        num_reflections (int): The number of reflections to perform, must be zero or positive.
+        aggregator_model_id (str | None): An optional aggregator model, to combine multiple model's responses.
+        verifier (Callable[[str], str] | None): An optional callable for verifying thinking steps.
+    """
+
     bedrock_model_ids: list[str]
     num_reflections: int
     aggregator_model_id: str | None = None
+    verifier: Callable[[str], str] | None = None
 
     @pydantic.field_validator("num_reflections")
     @classmethod
@@ -35,6 +47,8 @@ class HiveConfig(pydantic.BaseModel):
             logger.warning("We recommend a final aggregator_model when using multiple models.")
         if self.aggregator_model_id and self.n_models == 1:
             logger.warning("No need for an aggregator_model when using a single model.")
+        if self.single_model_single_call and self.verifier:
+            raise ValueError("verifier cannot be provided when using a single model call.")
         return self
 
     @property

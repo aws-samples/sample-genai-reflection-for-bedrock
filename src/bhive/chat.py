@@ -46,3 +46,6 @@ class ChatLog:
             assistant_msgs = [msg for msg in log if msg.get("role") == self._ASSISTANT]
             other_model_answers.append(assistant_msgs[-1])
         return other_model_answers
+
+    def get_last_answer(self, model_id: str) -> str:
+        return self.history[model_id][-1]["content"][0]["text"]
