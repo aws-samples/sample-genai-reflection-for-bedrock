@@ -13,6 +13,80 @@ pip install bedrock_hive
 
 ## 💬 Usage
 
+### Using a Single Model
+
+The easiest way to enable BedrockHive is as a drop-in replacement for the `converse` API in your existing application. You can set this up for a single model and an optional number of reflection rounds as shown below.
+
+```python
+from botocore.config import Config
+from bhive import BedrockHive, HiveConfig
+
+client_config = Config(region_name="us-east-1", retries={"max_attempts": 5})
+bhive_client = BedrockHive(client_config=client_config)
+
+bhive_config = HiveConfig(
+    bedrock_model_ids=["anthropic.claude-3-sonnet-20240229-v1:0"],
+    num_reflections=2,
+)
+
+response = bhive_client.converse("What is 2 + 2?", bhive_config)
+print(response)
+```
+
+### Using a Verifier
+
+You can optionally pass a `verifier` function to the `HiveConfig` which consumes the answers from a previous round of reflection and should return additional context about that response which allows the integration of external information.
+
+```python
+from botocore.config import Config
+from bhive import BedrockHive, HiveConfig
+
+client_config = Config(region_name="us-east-1", retries={"max_attempts": 5})
+bhive_client = BedrockHive(client_config=client_config)
+
+def twoplustwo_verifier(context: str) -> str:
+    if "4" in context:
+        return "this answer is correct"
+    else:
+        return "this answer is wrong"
+
+bhive_config = HiveConfig(
+    bedrock_model_ids=["anthropic.claude-3-sonnet-20240229-v1:0"],
+    num_reflections=2,
+    verifier=twoplustwo_verifier
+)
+
+response = bhive_client.converse("What is 2 + 2?", bhive_config)
+print(response)
+```
+
+For example, in a text-to-code application, such as text-to-SQL, your `verifier` function could attempt to execute the SQL and return some additional information about any runtime errors or data obtained by the function as shown below.
+
+```python
+def text2sql_verifier(context: str) -> str:
+    """Extracts SQL and validates it against a database."""
+    extracted_context = extract_xml_content(context, "SQL")
+    if len(extracted_context) == 0:
+        return "No SQL query found in the input string, make sure it is inside <SQL> tags."
+    if 1 < len(extracted_context):
+        return "Multiple SQL queries found in the input string, make sure there is only one <SQL> tag."
+
+    try:
+        result = execute_sql(db_path=db_path, sql=extracted_context[0])
+        result_df = pd.DataFrame(result)
+        base_msg = "The query was executed successfully against the database."
+        if not result_df.empty:
+            return f"{base_msg} It returned the following results:\n{result_df.to_string(index=False)}"
+        else:
+            return f"{base_msg} It returned no results."
+    except Exception as e:
+        return f"Error executing the SQL query: {str(e)}"
+```
+
+### Using Multiple Models
+
+You can also incorporate multiple different Bedrock models for multiple rounds of reflections where the models will debate about the answer and collaborate on solving the task. In order to use this functionality you need to provide an `aggregator_model_id` which performs the role of summarising the last debate round into a final response.
+
 ```python
 from botocore.config import Config
 from bhive import BedrockHive, HiveConfig
