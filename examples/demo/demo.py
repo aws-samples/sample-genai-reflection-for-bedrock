@@ -33,6 +33,16 @@ user_input = st.text_input("Your Question:", "What is 2 + 2?")
 models = st.multiselect("Choose the models to use:", options=AVAILABLE_MODELS)
 n_reflections = st.slider("Number of reflection / debate rounds:", 0, 10, 2)
 
+
+def dummy_verifier(answer: str) -> str:
+    if "4" in answer:
+        return "The answer has the correct number."
+    else:
+        return "The answer does not have the correct number."
+
+
+use_verifier = st.checkbox("Use the verification function", value=False)
+
 aggregator_model = None
 if 1 < len(models):
     aggregator_model = st.selectbox(
@@ -46,6 +56,7 @@ if st.button("Submit"):
             bedrock_model_ids=models,
             num_reflections=n_reflections,
             aggregator_model_id=aggregator_model,
+            verifier=dummy_verifier if use_verifier else None,
         )
         response = client.converse(user_input, _config)
         st.subheader("Final Answer")

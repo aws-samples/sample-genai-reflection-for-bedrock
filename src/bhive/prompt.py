@@ -8,7 +8,7 @@ These are the recent answers to the same question from other agents:
 """
 
 reflect = """
-Can you verify that your answer is correct. Please reiterate your answer by thinking step by step, making sure to state your answer at the end of the response.
+Please reiterate your answer by thinking step by step, making sure to state your answer at the end of the response.
 """
 
 careful = """
