@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath("../src/"))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "BedrockHive"
+project = "Hive"
 copyright = "2024, Jack Butler"
 author = "Jack Butler"
 release = "v0.1.0-alpha"

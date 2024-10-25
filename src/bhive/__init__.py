@@ -1,6 +1,6 @@
 import sys
 from loguru import logger
-from bhive.client import BedrockHive as BedrockHive
+from bhive.client import Hive as Hive
 from bhive.config import HiveConfig as HiveConfig
 
 logger.remove()

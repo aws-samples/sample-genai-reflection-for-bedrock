@@ -1,0 +1,14 @@
+{
+    "easy": {
+        "Bedrock (single)": 0.95,
+        "Hive": 1.0
+    },
+    "medium": {
+        "Bedrock (single)": 0.52,
+        "Hive": 0.62
+    },
+    "hard": {
+        "Bedrock (single)": 0.13,
+        "Hive": 0.2
+    }
+}

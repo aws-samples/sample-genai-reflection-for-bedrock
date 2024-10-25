@@ -1,0 +1,17 @@
+Overview:
+This was implemented with v0.1.0-beta of the library,
+leveraging a single 'anthropic.claude-3-sonnet-20240229-v1:0' model
+and multiple rounds of self-reflection on the answers
+without any use of a verifier or aggregation from multiple model samples
+
+Legend:
+- Hive is the best performing bedrock configuration
+- Bedrock is a single model call via Bedrock
+
+Data:
+The following snippet generated the questions for each section:
+a, b, c, d, e, f = np.random.randint(0, 50, size=6) # easy
+a, b, c, d, e, f = np.random.randint(250, 750, size=6) # medium
+a, b, c, d, e, f = np.random.randint(1000, 2000, size=6) # hard
+question = "What is the result of {}+{}*{}+{}-{}*{}? Make sure to state your answer in <answer> </answer> tags.".format(a,b,c,d,e,f)
+answer = a + b * c + d - e * f

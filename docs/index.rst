@@ -1,4 +1,4 @@
-BedrockHive documentation
+Hive documentation
 =========================
 
 .. toctree::
@@ -12,10 +12,10 @@ HiveConfig
    :undoc-members:
    :show-inheritance:
 
-BedrockHive Class
+Hive Class
 -----------------
 
-.. autoclass:: bhive.BedrockHive
+.. autoclass:: bhive.Hive
    :members:
    :undoc-members:
    :show-inheritance:

@@ -16,9 +16,12 @@ wheels/
 .env
 
 # Static files
-*.json
 *.prof
-*png
+examples/profiling/*.png
+examples/profiling/*.json
 
 # Sphinx
 _build/
+
+# Other
+*.DS_Store

@@ -26,7 +26,7 @@ def should_instantiate_using_client_config(
     mock_boto_client, mock_runtime_client, example_boto_config
 ):
     mock_boto_client.return_value = mock_runtime_client
-    bedrock_hive = client.BedrockHive(client_config=example_boto_config)
+    bedrock_hive = client.Hive(client_config=example_boto_config)
     mock_boto_client.assert_called_once_with(
         service_name=client._RUNTIME_CLIENT_NAME, config=example_boto_config
     )
@@ -34,15 +34,15 @@ def should_instantiate_using_client_config(
 
 
 def should_instantiate_using_client(mock_runtime_client):
-    bedrock_hive = client.BedrockHive(client=mock_runtime_client)
+    bedrock_hive = client.Hive(client=mock_runtime_client)
     assert bedrock_hive.runtime_client == mock_runtime_client
 
 
 def should_fail_when_using_neither_client_or_config():
     with pytest.raises(ValueError):
-        client.BedrockHive()
+        client.Hive()
 
 
 def should_fail_when_using_client_and_config():
     with pytest.raises(ValueError):
-        client.BedrockHive(client_config="example", client="example")
+        client.Hive(client_config="example", client="example")
