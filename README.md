@@ -78,11 +78,14 @@ You can also optionally pass a `verifier` function to the `HiveConfig` which con
 ```mermaid
 graph LR;
     A[Input] --> B[Initial Thought]
-    B --> C[Round 1: Revision]
+    B --> V0[Verifier]
+    V0 --> C[Round 1: Revision]
     C --> V1[Verifier]
     V1 --> D[Round 2: Revision]
-    D --> V2[Verifier]
-    V2 --> E[Output]
+    D --> E[Output]
+
+    style V0 fill:#800080,stroke:#000000,stroke-width:2px
+    style V1 fill:#800080,stroke:#000000,stroke-width:2px
 ```
 
 ```python
