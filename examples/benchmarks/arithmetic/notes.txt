@@ -5,7 +5,7 @@ and multiple rounds of self-reflection on the answers
 without any use of a verifier or aggregation from multiple model samples
 
 Legend:
-- Hive is the best performing bedrock configuration
+- Hive is the best performing BedrockHive configuration
 - Bedrock is a single model call via Bedrock
 
 Data:
