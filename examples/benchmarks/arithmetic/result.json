@@ -1,0 +1,17 @@
+{
+    "easy": {
+        "0 reflection": 0.95,
+        "1 reflection": 0.98,
+        "2 reflection": 1.0
+    },
+    "medium": {
+        "0 reflection": 0.52,
+        "1 reflection": 0.60,
+        "2 reflection": 0.62
+    },
+    "hard": {
+        "0 reflection": 0.13,
+        "1 reflection": 0.20,
+        "2 reflection": 0.20
+    }
+}

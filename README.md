@@ -1,6 +1,14 @@
 # 🐝 BedrockHive
 
-A configurable extension to Bedrock text generation, focused on enhancing reasoning performance.
+A configurable extension to Bedrock text generation that enhances reasoning capabilities by enabling additional compute at test time.
+
+We have shown that, using a subset of the features available in BedrockHive, you can achieve significantly higher performance on reasonings tasks such as Arithmetic mathematics as described [here](./examples/benchmarks/arithmetic/notes.txt).
+
+<p align="center" width="100%">
+    <img src="./examples/benchmarks/arithmetic/result.png" width="75%" height="50%" />
+</p>
+
+> There are more evaluations ongoing for other tasks, please reach out if you have a specific task of interest!
 
 ## 📦 Installation
 
@@ -13,16 +21,46 @@ pip install bedrock_hive
 
 ## 💬 Usage
 
-### Using a Single Model
+There are a variety of ways to leverage BedrockHive in your project:
 
-The easiest way to enable BedrockHive is as a drop-in replacement for the `converse` API in your existing application. You can set this up for a single model and an optional number of reflection rounds as shown below.
+### Client Configuration
+
+Initially, you have to provide BedrockHive with a way of connecting to a bedrock runtime client as follows;
+
+1) You can provide `botocore.config.Config`:
+
 
 ```python
 from botocore.config import Config
-from bhive import BedrockHive, HiveConfig
+from bhive import Hive, HiveConfig
 
 client_config = Config(region_name="us-east-1", retries={"max_attempts": 5})
-bhive_client = BedrockHive(client_config=client_config)
+bhive_client = Hive(client_config=client_config)
+```
+
+2) or pass directly a `boto3` bedrock runtime client
+
+```python
+from bhive import HiveConfig
+
+bedrock_client = ... # your own custom authentication pattern
+bhive_client = Hive(client=bedrock_client)
+```
+
+### 1) Using a Single Model
+
+Now that you've setup the `Hive` client, the easiest way to leverage it in your project is with a single model and an optional number of reflection rounds as shown below. This configuration enables the model to reflect on its' response and apply more compute to solving a more difficult problem.
+
+```mermaid
+graph LR;
+    A[Input] --> B[Initial Thought]
+    B --> C[Round 1: Revision]
+    C --> D[Round 2: Revision]
+    D --> E[Output]
+```
+
+```python
+from bhive import HiveConfig
 
 bhive_config = HiveConfig(
     bedrock_model_ids=["anthropic.claude-3-sonnet-20240229-v1:0"],
@@ -33,16 +71,22 @@ response = bhive_client.converse("What is 2 + 2?", bhive_config)
 print(response)
 ```
 
-### Using a Verifier
+### 2) Using a Verifier
 
-You can optionally pass a `verifier` function to the `HiveConfig` which consumes the answers from a previous round of reflection and should return additional context about that response which allows the integration of external information.
+You can also optionally pass a `verifier` function to the `HiveConfig` which consumes a model output from a previous round of reflection and should return additional context about that response which allows the integration of external information. The `verifier` must be a `Callable` which consumes a single `str` and outputs another `str`.
+
+```mermaid
+graph LR;
+    A[Input] --> B[Initial Thought]
+    B --> C[Round 1: Revision]
+    C --> V1[Verifier]
+    V1 --> D[Round 2: Revision]
+    D --> V2[Verifier]
+    V2 --> E[Output]
+```
 
 ```python
-from botocore.config import Config
-from bhive import BedrockHive, HiveConfig
-
-client_config = Config(region_name="us-east-1", retries={"max_attempts": 5})
-bhive_client = BedrockHive(client_config=client_config)
+from bhive import HiveConfig
 
 def twoplustwo_verifier(context: str) -> str:
     if "4" in context:
@@ -60,16 +104,12 @@ response = bhive_client.converse("What is 2 + 2?", bhive_config)
 print(response)
 ```
 
-For example, in a text-to-code application, such as text-to-SQL, your `verifier` function could attempt to execute the SQL and return some additional information about any runtime errors or data obtained by the function as shown below.
+There are often cases where additional context can be used to help steer the model during a problem solving iteration. For example, in a text-to-code application, such as text-to-SQL, a `verifier` can execute the SQL and return some additional information about runtime errors or data as shown below.
 
 ```python
 def text2sql_verifier(context: str) -> str:
     """Extracts SQL and validates it against a database."""
-    extracted_context = extract_xml_content(context, "SQL")
-    if len(extracted_context) == 0:
-        return "No SQL query found in the input string, make sure it is inside <SQL> tags."
-    if 1 < len(extracted_context):
-        return "Multiple SQL queries found in the input string, make sure there is only one <SQL> tag."
+    extracted_sql_query = extract_sql(context, "<SQL>")
 
     try:
         result = execute_sql(db_path=db_path, sql=extracted_context[0])
@@ -83,16 +123,39 @@ def text2sql_verifier(context: str) -> str:
         return f"Error executing the SQL query: {str(e)}"
 ```
 
-### Using Multiple Models
+### 3) Using Multiple Models
 
-You can also incorporate multiple different Bedrock models for multiple rounds of reflections where the models will debate about the answer and collaborate on solving the task. In order to use this functionality you need to provide an `aggregator_model_id` which performs the role of summarising the last debate round into a final response.
+You can also incorporate multiple different Bedrock models to collaboratively try to solve your task. In order to use this functionality you need to provide an `aggregator_model_id` which performs the role of summarising the last debate round into a final response. The example code below would implement the following inference method where <span style="color: #005f99;">blue</span> signifies a Claude response and <span style="color: #e63946;">red</span> a response from Mistral.
+
+```mermaid
+graph LR;
+    A[Input] --> B1[Initial Thought]
+    A[Input] --> B2[Initial Thought]
+
+    B1 --> C1[Round 1: Revision]
+    B2 --> C1
+    B2 --> C2[Round 1: Revision]
+    B1 --> C2
+
+    C1 --> D1[Round 2: Revision]
+    C2 --> D1
+    C2 --> D2[Round 2: Revision]
+    C1 --> D2
+
+    D2 --> AG
+    D1 --> AG[Aggregator]
+    AG --> E[Output]
+
+    style B1 fill:#005f99,stroke:#333,stroke-width:2px;
+    style B2 fill:#e63946,stroke:#333,stroke-width:2px;
+    style C1 fill:#005f99,stroke:#333,stroke-width:2px;
+    style C2 fill:#e63946,stroke:#333,stroke-width:2px;
+    style D1 fill:#005f99,stroke:#333,stroke-width:2px;
+    style D2 fill:#e63946,stroke:#333,stroke-width:2px;
+```
 
 ```python
-from botocore.config import Config
-from bhive import BedrockHive, HiveConfig
-
-client_config = Config(region_name="us-east-1", retries={"max_attempts": 5})
-bhive_client = BedrockHive(client_config=client_config)
+from bhive import HiveConfig
 
 models = ["anthropic.claude-3-sonnet-20240229-v1:0", "mistral.mistral-large-2402-v1:0"]
 bhive_config = HiveConfig(
@@ -105,11 +168,19 @@ response = bhive_client.converse("What is 2 + 2?", bhive_config)
 print(response)
 ```
 
+You can also apply the verifier from the previous stage in this inference method, applying it independently to each revision from each model.
+
+## 🧪 Live Playground
+
+**TBC**
+
 ## 🤝 Contributors
 
-Chat to [`@jackbtlr`](https://phonetool.amazon.com/users/jackbtlr) if you have feature suggestions or bug report.
+### Guidelines
 
-### UV
+Chat to [`@jackbtlr`](https://phonetool.amazon.com/users/jackbtlr) if you have feature suggestions, bugs or thoughts on improving `BedrockHive`!
+
+### Tooling
 
 We use `uv`, a fast rust-based python tool for managing dependencies. Although you don't have to use `uv` for working on this package, I recommend you try it out and read more on [their website](https://docs.astral.sh/uv/).
 
@@ -121,10 +192,21 @@ uv python install / list / uninstall # for handling python versions
 uv add / remove / sync / lock # for handling python dependencies
 
 uv run example.py # for running scripts inside an environment
-
 ```
 
-### Logging
+[`Pre-commit`](https://pre-commit.com/) is used for handling linting, type checking and other code hygiene related factors. We use `pytest` as our testing framework of choice, read more about their documentation [here](https://docs.pytest.org/en/stable/). In particular, we use a convention for starting all test functions with `should_` as it encourages a more declarative mindset around test writing. If you don't use this convention, the tests will not be picked up in `pytest`.
+
+```bash
+uv run pre-commit run # runs pre-commit stack
+
+uv run pytest -v # runs tests
+```
+
+Package documentation is handled via [`sphinx`](https://www.sphinx-doc.org/en/) and can be built by running:
+```bash
+uv run sphinx-build -b html docs _build/html # builds documentation
+open _build/html/index.html # views it locally
+```
 
 Logging is handled via [`loguru`](https://github.com/Delgan/loguru) as it's very simple to use and sufficient for most use cases. It is by default set to the `INFO` level but developers can change it to `DEBUG` to see more detailed output or `WARNING` to see less by running the following snippet locally:
 
@@ -134,30 +216,6 @@ from loguru import logger
 
 logger.remove() # removes existing logger
 logger.add(sys.stderr, level="<level>") # adds a logger with DEBUG or WARNING or another level
-```
-
-### Pre-Commit
-
-[`pre-commit`](https://pre-commit.com/) is used for handling linting, type checking and other code hygiene related factors.
-
-```bash
-uv run pre-commit run --all-files
-```
-
-### Pytest
-
-We use `pytest` as our testing framework of choice, read more about their documentation [here](https://docs.pytest.org/en/stable/). In particular, we use a convention for starting all test functions with `should_` as it encourages a more declarative mindset around test writing. If you don't use this convention, the tests will not be picked up in `pytest`.
-
-```bash
-uv run pytest -v
-```
-
-### Sphinx
-
-Package documentation is handled via [`sphinx`](https://www.sphinx-doc.org/en/) and can be built by running:
-```bash
-uv run sphinx-build -b html docs _build/html # builds documentation
-open _build/html/index.html # views it locally
 ```
 
 ## FAQs
@@ -172,4 +230,4 @@ open _build/html/index.html # views it locally
 > At the moment we only support text generation but this may be added in the future.
 
 4. Can I authenticate with my own `boto3` client?
-> Yes, you can pass an initialised client instance to `BedrockHive`, otherwise we will try to create a client from the `AWS_PROFILE` environment variable.
+> Yes, you can pass an initialised client instance to the `Hive` class, otherwise we will try to create a client from the `AWS_PROFILE` environment variable.

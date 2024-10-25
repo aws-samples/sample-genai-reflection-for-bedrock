@@ -2,7 +2,7 @@ import os
 import dotenv
 import argparse
 from botocore.config import Config
-from bhive import BedrockHive, HiveConfig
+from bhive import Hive, HiveConfig
 import cProfile
 
 dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
@@ -18,7 +18,7 @@ AVAILABLE_MODELS = [
 ]
 BEDROCK_CONFIG = Config(region_name="us-east-1")
 
-client = BedrockHive(client_config=BEDROCK_CONFIG)
+client = Hive(client_config=BEDROCK_CONFIG)
 
 
 def profile_bedrock_hive(models, n_reflections, output_file) -> None:

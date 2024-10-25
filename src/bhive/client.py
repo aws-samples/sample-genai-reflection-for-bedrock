@@ -8,7 +8,7 @@ from bhive.utils import parse_bedrock_output
 _RUNTIME_CLIENT_NAME = "bedrock-runtime"
 
 
-class BedrockHive:
+class Hive:
     """
     A class for enhancing reasoning capabilities by leveraging multiple models
     and maintaining conversation history.
@@ -32,7 +32,7 @@ class BedrockHive:
     """
 
     def __init__(self, client_config: Config | None = None, client=None) -> None:
-        """Initializes a BedrockHive instance connected to a Boto3 client.
+        """Initializes a Hive instance connected to a Boto3 client.
 
         This constructor either creates a new Boto3 client using the provided
         `client_config` or uses the existing `client`.
@@ -52,6 +52,8 @@ class BedrockHive:
                 service_name=_RUNTIME_CLIENT_NAME, config=client_config
             )
         elif client:
+            if not hasattr(client, "converse"):
+                raise ValueError("Provided client does not have a 'converse' method.")
             self.runtime_client = client
         else:
             raise ValueError("Either client_config or client must be provided.")
@@ -59,7 +61,7 @@ class BedrockHive:
     def converse(
         self, message: str, config: config.HiveConfig, **converse_kwargs
     ) -> chat.HiveOutput:
-        """Invokes conversation with BedrockHive using inference parameters.
+        """Invokes conversation with Hive using inference parameters.
 
         This method sends a message to the configured models and processes
         their responses based on the provided configuration.

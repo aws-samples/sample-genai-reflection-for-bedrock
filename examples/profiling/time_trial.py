@@ -5,7 +5,7 @@ import math
 import statistics
 import pandas as pd
 from botocore.config import Config
-from bhive import BedrockHive, HiveConfig
+from bhive import Hive, HiveConfig
 
 dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
 dotenv.load_dotenv(dotenv_path)
@@ -24,7 +24,7 @@ BEDROCK_CONFIG = Config(
     read_timeout=120,
     retries={"max_attempts": 5},
 )
-CLIENT = BedrockHive(client_config=BEDROCK_CONFIG)
+CLIENT = Hive(client_config=BEDROCK_CONFIG)
 
 
 def profile_bedrock_hive(models, n_reflections, aggregator_id, replicates):
