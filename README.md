@@ -5,7 +5,7 @@ A configurable extension to Bedrock text generation that enhances reasoning capa
 We have shown that, using a subset of the features available in BedrockHive, you can achieve significantly higher performance on reasonings tasks such as Arithmetic mathematics as described [here](./examples/benchmarks/arithmetic/notes.txt).
 
 <p align="center" width="100%">
-    <img src="./examples/benchmarks/arithmetic/result.png" width="75%" height="50%" />
+    <img src="./examples/benchmarks/arithmetic/result.png"/>
 </p>
 
 > There are more evaluations ongoing for other tasks, please reach out if you have a specific task of interest!
