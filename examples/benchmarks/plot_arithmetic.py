@@ -66,7 +66,7 @@ for i in range(len(categories)):
 # Improve labels and titles
 plt.ylabel(metric, fontsize=23, weight="bold")
 plt.ylim(0, 106)
-plt.title(f"Performance in {title}", fontsize=24, weight="bold")
+plt.title(f"Performance on {title}", fontsize=24, weight="bold")
 plt.legend(facecolor="white", fontsize=22)
 
 # Customize ticks
