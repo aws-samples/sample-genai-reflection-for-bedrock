@@ -25,9 +25,7 @@ There are a variety of ways to leverage BedrockHive in your project:
 
 ### Client Configuration
 
-Initially, you have to provide BedrockHive with a way of connecting to a bedrock runtime client as follows;
-
-1) You can provide `botocore.config.Config`:
+Initially, you have to provide BedrockHive with a way of connecting to a bedrock runtime client. You can provide a `botocore.config.Config` and the `Hive` class will create a client from your `AWS_PROFILE` environment variable as shown below:
 
 
 ```python
@@ -38,14 +36,7 @@ client_config = Config(region_name="us-east-1", retries={"max_attempts": 5})
 bhive_client = Hive(client_config=client_config)
 ```
 
-2) or pass directly a `boto3` bedrock runtime client
-
-```python
-from bhive import HiveConfig
-
-bedrock_client = ... # your own custom authentication pattern
-bhive_client = Hive(client=bedrock_client)
-```
+> You can also create your own custom `boto3` bedrock runtime client and pass that directly to the `Hive` class.
 
 ### 1) Using a Single Model
 
