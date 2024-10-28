@@ -27,15 +27,12 @@ BEDROCK_CONFIG = Config(
 CLIENT = Hive(client_config=BEDROCK_CONFIG)
 N_REPLICATES = 1
 
-def profile_bedrock_hive(models, n_reflections, aggregator_id, replicates=N_REPLICATES):
+
+def profile_bedrock_hive(models, n_reflections, replicates=N_REPLICATES):
     durations = []
 
     for _ in range(replicates):
-        _config = HiveConfig(
-            bedrock_model_ids=models,
-            num_reflections=n_reflections,
-            aggregator_model_id=aggregator_id,
-        )
+        _config = HiveConfig(bedrock_model_ids=models, num_reflections=n_reflections)
 
         start_time = time.time()
         _ = CLIENT.converse("What is 2 + 2?", _config)  # same simple question each time
