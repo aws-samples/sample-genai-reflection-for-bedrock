@@ -15,8 +15,8 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 # Available models and configuration
 AVAILABLE_MODELS = [
     "anthropic.claude-3-sonnet-20240229-v1:0",
-    "mistral.mistral-large-2402-v1:0",
-    "amazon.titan-text-premier-v1:0",
+    # "mistral.mistral-large-2402-v1:0",
+    # "amazon.titan-text-premier-v1:0",
 ]
 BEDROCK_CONFIG = Config(
     region_name="us-east-1",
@@ -25,9 +25,9 @@ BEDROCK_CONFIG = Config(
     retries={"max_attempts": 5},
 )
 CLIENT = Hive(client_config=BEDROCK_CONFIG)
+N_REPLICATES = 1
 
-
-def profile_bedrock_hive(models, n_reflections, aggregator_id, replicates):
+def profile_bedrock_hive(models, n_reflections, aggregator_id, replicates=N_REPLICATES):
     durations = []
 
     for _ in range(replicates):
@@ -56,12 +56,10 @@ if __name__ == "__main__":
     for num_models in range(1, len(AVAILABLE_MODELS) + 1):
         models = AVAILABLE_MODELS[:num_models]  # could test out variants
         for n_reflections in range(0, 3):  # number of reflections
-            for use_aggregator in [False]:  # remove aggregator as constant cost
-                aggregator_id = AVAILABLE_MODELS[0] if use_aggregator else None
-                print(f"Profiling models: {models} with {n_reflections} reflections")
-                results = profile_bedrock_hive(models, n_reflections, aggregator_id, replicates=5)
-                time.sleep(5)
-                all_results.append(results)
+            print(f"Profiling {models=} with {n_reflections=}")
+            results = profile_bedrock_hive(models, n_reflections)
+            time.sleep(5)
+            all_results.append(results)
 
     # Convert results to DataFrame and save as JSON
     df = pd.DataFrame(all_results)
