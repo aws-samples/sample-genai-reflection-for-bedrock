@@ -15,16 +15,9 @@ class HiveConfig(pydantic.BaseModel):
     """
 
     bedrock_model_ids: list[str]
-    num_reflections: int
+    num_reflections: int = pydantic.Field(ge=0)
     aggregator_model_id: str | None = None
     verifier: Callable[[str], str] | None = None
-
-    @pydantic.field_validator("num_reflections")
-    @classmethod
-    def ensure_positive_or_zero(cls, v: int) -> int:
-        if v < 0:
-            raise ValueError("num_reflections must be a positive number or equal to 0.")
-        return v
 
     @pydantic.field_validator("bedrock_model_ids")
     @classmethod

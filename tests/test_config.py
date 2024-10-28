@@ -1,4 +1,5 @@
 import pytest
+from pydantic_core import ValidationError
 from bhive.config import HiveConfig
 
 
@@ -18,7 +19,7 @@ def should_allow_arbitrary_modelids(model_ids: list[str]):
 
 @pytest.mark.parametrize("num_reflections", [(-5), (-1)])
 def should_raise_error_for_invalid_num_reflections(num_reflections: int):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         HiveConfig(
             bedrock_model_ids=["FAKE_MODEL"],
             num_reflections=num_reflections,
