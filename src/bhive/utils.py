@@ -5,9 +5,10 @@ from typing import Callable
 
 def parse_bedrock_output(response: dict) -> str:
     replies = response["output"]["message"]["content"]
-    logger.debug(f"Raw {response=}")
-    assert len(replies) < 2, "Model has returned multiple content blocks for one task."
-    assert 0 < len(replies), "Model has returned no content blocks for the task."
+    logger.debug(f"Request output:\n{response['output']=}")
+    logger.debug(f"Request statistics:\n{response['usage']}\n{response['metrics']}")
+    if not len(replies) == 1:
+        raise ValueError("Model has returned multiple or no content blocks in this response.")
     return replies[0]["text"]
 
 
