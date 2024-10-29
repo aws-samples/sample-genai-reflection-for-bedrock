@@ -1,14 +1,22 @@
 # 🐝 BedrockHive
 
-A configurable extension to Bedrock text generation that enhances reasoning capabilities by enabling additional compute at test time.
-
-We have shown that, using a subset of the features available in BedrockHive, you can achieve significantly higher performance on reasonings tasks such as Arithmetic mathematics as described [here](./examples/benchmarks/arithmetic/notes.txt).
+A configurable extension to Bedrock text generation that enhances reasoning capabilities by enabling additional compute at test time. We have shown that by leveraging up to 5 rounds of BedrockHive self-reflection you can achieve an +40% increase in complex mathematical reasoning performance on the Arithmetic benchmark described [here](./examples/benchmarks/arithmetic/notes.txt).
 
 <p align="center" width="100%">
     <img src="./examples/benchmarks/arithmetic/result.png"/>
 </p>
 
+The relationship between accuracy, latency, and cost is crucial for selecting a sampling strategy. Each task or problem domain is likely to have a unique profile, but we can use this specific arithmetic benchmark as a rough guideline. For this task, we see that increasing the number of times a model reflects on its answer provides a performance boost, particularly for harder tasks. Additionally, both latency and cost increase linearly with the number of reflection rounds, as self-reflection maintains a relatively constant number of output tokens, thereby mitigating significant additional costs. Using BedrockHive, users can configure the number of reflection rounds based on the difficulty level and dynamically allocate more compute resources to more challenging problems. However, if they are particularly focused on easier tasks, they can choose whether to spend $3.50 for 80% accuracy or $7.00 for 100% accuracy, depending on their task.
+
+<p align="center" width="100%">
+    <img src="./examples/benchmarks/arithmetic/latency_vs_cost_performance.png"/>
+</p>
+
 > There are more evaluations ongoing for other tasks, please reach out if you have a specific task of interest!
+
+> If you leverage [multiple models](README.md#3-using-multiple-models), your latency will likely not be affected in the same way.
+
+> The time profiling was completed on a personal Isengard account using on-demand models, take it with a pinch of 🧂.
 
 ## 📦 Installation
 
@@ -214,14 +222,11 @@ logger.add(sys.stderr, level="<level>") # adds a logger with DEBUG or WARNING or
 
 ## FAQs
 
-1. How does this scale with the number of models or rounds of reflection?
-> You should expect the pipeline to scale roughly linearly with the # reflections as these calls must happen in serial but you should not see any dramatic increases as you scale the # models.
-
-2. Can I use this with any model on Bedrock?
+1. Can I use this with any model on Bedrock?
 > The model must support conversation history to be used, this rules out certain models such as `Jurassic-2 Ultra` which do not have this capability.
 
-3. Does it support multimodal queries?
+2. Does it support multimodal queries?
 > At the moment we only support text generation but this may be added in the future.
 
-4. Can I authenticate with my own `boto3` client?
+3. Can I authenticate with my own `boto3` client?
 > Yes, you can pass an initialised client instance to the `Hive` class, otherwise we will try to create a client from the `AWS_PROFILE` environment variable.

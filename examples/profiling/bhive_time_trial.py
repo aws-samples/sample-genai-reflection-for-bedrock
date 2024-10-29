@@ -5,7 +5,9 @@ import math
 import statistics
 import pandas as pd
 from botocore.config import Config
-from bhive import Hive, HiveConfig
+from bhive import Hive, HiveConfig, set_logger_level
+
+set_logger_level("DEBUG")
 
 dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
 dotenv.load_dotenv(dotenv_path)
@@ -26,6 +28,7 @@ BEDROCK_CONFIG = Config(
 )
 CLIENT = Hive(client_config=BEDROCK_CONFIG)
 N_REPLICATES = 1
+Q = "What is the result of 674+492*613+485-623*429? Make sure to always state your final answer in <answer> </answer> tags."
 
 
 def profile_bedrock_hive(models, n_reflections, replicates=N_REPLICATES):
@@ -33,16 +36,17 @@ def profile_bedrock_hive(models, n_reflections, replicates=N_REPLICATES):
 
     for _ in range(replicates):
         _config = HiveConfig(bedrock_model_ids=models, num_reflections=n_reflections)
-
         start_time = time.time()
-        _ = CLIENT.converse("What is 2 + 2?", _config)  # same simple question each time
+        _ = CLIENT.converse(Q, _config)  # same simple question each time
         durations.append(time.time() - start_time)
 
+    std_err = statistics.stddev(durations) / math.sqrt(replicates) if replicates > 1 else None
     return {
+        "cost": None,
         "models": models,
         "n_reflections": n_reflections,
-        "mean": statistics.mean(durations),
-        "std_err": statistics.stdev(durations) / math.sqrt(replicates),
+        "latency_mean": statistics.mean(durations),
+        "latency_stderr": std_err,
     }
 
 
@@ -51,15 +55,15 @@ if __name__ == "__main__":
 
     # Iterate over combinations of models and reflection rounds
     for num_models in range(1, len(AVAILABLE_MODELS) + 1):
-        models = AVAILABLE_MODELS[:num_models]  # could test out variants
-        for n_reflections in range(0, 3):  # number of reflections
-            print(f"Profiling {models=} with {n_reflections=}")
+        models = AVAILABLE_MODELS[:num_models]
+        for n_reflections in [0, 1, 2, 3, 5]:  # number of reflections
+            print(f"PROFILING {models=} AND {n_reflections=}\n")
             results = profile_bedrock_hive(models, n_reflections)
             time.sleep(5)
             all_results.append(results)
 
     # Convert results to DataFrame and save as JSON
     df = pd.DataFrame(all_results)
-    output_file = f"{dir_path}/timing_results.json"
-    df.to_json(output_file, orient="records", lines=True)
+    output_file = f"{dir_path}/timing_results.csv"
+    df.to_csv(output_file, index=False)
     print(f"Profiling results saved to {output_file}")

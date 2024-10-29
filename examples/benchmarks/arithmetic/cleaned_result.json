@@ -1,14 +1,14 @@
 {
-    "easy": {
-        "Bedrock (single)": 0.95,
-        "Hive": 1.0
+    "Easy": {
+        "Bedrock (single call)": 0.84,
+        "Hive (w/ reflection)": 1.0
     },
-    "medium": {
-        "Bedrock (single)": 0.52,
-        "Hive": 0.62
+    "Medium": {
+        "Bedrock (single call)": 0.47,
+        "Hive (w/ reflection)": 0.62
     },
-    "hard": {
-        "Bedrock (single)": 0.13,
-        "Hive": 0.2
+    "Hard": {
+        "Bedrock (single call)": 0.22,
+        "Hive (w/ reflection)": 0.31
     }
 }

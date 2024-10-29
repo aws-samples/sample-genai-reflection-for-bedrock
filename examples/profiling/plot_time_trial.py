@@ -1,51 +1,65 @@
 import os
-import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
+# Set the current directory and data path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+data_path = current_dir + "/timing_results.csv"
+timing_data = pd.read_csv(data_path)
 
+# Assuming acc_data is defined as per your original code
+acc_data = pd.read_json("./examples/benchmarks/arithmetic/result.json")
+acc_data.index = [int(x.replace("reflection", "").strip()) for x in acc_data.index]
+acc_data["n_reflections"] = acc_data.index
 
-def plot_bar(name: str, df: pd.DataFrame):
-    df["model_combination"] = ["\n".join(x) for x in df["models"]]
-    n_reflections_unique = df["n_reflections"].unique()
+data = pd.merge(timing_data, acc_data, on="n_reflections", how="outer")
 
-    colors = plt.cm.plasma(np.linspace(0, 1, len(n_reflections_unique)))
-    color_map = {n: colors[i] for i, n in enumerate(n_reflections_unique)}
-    df["color"] = df["n_reflections"].map(color_map)
+# Create subplots
+fig, axes = plt.subplots(1, 2, figsize=(18, 7))
+sns.set_theme(font_scale=1.3)
 
-    model_combinations = df["model_combination"].unique()
-    n_reflections = df["n_reflections"].unique()
+# Define the difficulties
+difficulties = ["Easy", "Medium", "Hard"]
+for difficulty in difficulties:
+    data[difficulty] *= 100
 
-    bar_width = 0.25  # Wider bars for better visibility
-    index = np.arange(len(model_combinations))
+# Plot 1: Performance vs Reflections
+palette = sns.color_palette("viridis", n_colors=len(difficulties))
+for i, difficulty in enumerate(difficulties):
+    sns.lineplot(data=data, x="n_reflections", y=difficulty, color=palette[-(i + 1)], ax=axes[0])
+    sns.scatterplot(
+        data=data,
+        x="n_reflections",
+        y=difficulty,
+        color=palette[-(i + 1)],
+        s=200,
+        ax=axes[0],
+        label=difficulty,
+    )
 
-    plt.figure(figsize=(14, 10))  # Larger figure size for clarity
-    for i, n in enumerate(n_reflections):
-        subset = df[df["n_reflections"] == n]
-        plt.barh(
-            index + i * bar_width,
-            subset["mean"],
-            height=bar_width,
-            color=color_map[n],
-            label=f"{n} reflections",
-            xerr=subset["std_err"],
-            capsize=5,
-            edgecolor="black",
-        )
+axes[0].set_ylabel("% Correct", fontsize=23, weight="bold")
+axes[0].set_xlabel("# Reflections", fontsize=23, weight="bold")
+axes[0].set_title("Performance vs # Reflections", fontsize=24, weight="bold")
+axes[0].legend(title="Difficulty", fontsize=22, title_fontsize="23")
+axes[0].tick_params(axis="both", labelsize=22)
+axes[0].grid(axis="both", linestyle="--", alpha=0.7)
+axes[0].set_ylim(0, 105)
 
-    plt.yticks(index + bar_width * (len(n_reflections) - 1) / 2, model_combinations, fontsize=12)
-    plt.xlabel("Duration (seconds) - $\mu \pm \sigma$", fontsize=14)
-    plt.title(f"Time Taken: {name}", fontsize=16, fontweight="bold")
-    plt.legend(title="# Reflections", fontsize=12)
-    plt.grid(axis="x", linestyle="--", alpha=0.7)
-    plt.tight_layout()
+# Plot 2: Cost vs Latency
+palette = sns.color_palette("cividis", n_colors=data["n_reflections"].nunique())
+sns.scatterplot(
+    data=data, y="cost", x="latency_mean", hue="n_reflections", s=250, ax=axes[1], palette=palette
+)
 
-    plt.savefig(f"{dir_path}/grouped_time_trial.png")
+axes[1].set_xlabel("Mean Latency per sample (s)", fontsize=23, weight="bold")
+axes[1].set_ylabel("Cost per sample ($)", fontsize=23, weight="bold")
+axes[1].set_title("Cost vs Latency", fontsize=24, weight="bold")
+axes[1].legend(title="# Reflections", fontsize=22, title_fontsize="23")
+axes[1].tick_params(axis="both", labelsize=22)
+axes[1].grid(axis="both", linestyle="--", alpha=0.7)
+axes[1].set_ylim(0, 34)
+axes[1].set_xlim(0, 65)
 
-
-if __name__ == "__main__":
-    df = pd.read_json(f"{dir_path}/timing_results.json", orient="records", lines=True)
-    if "aggregator" in df.columns:
-        df = df[df["aggregator"].isnull()]
-    plot_bar("(without aggregation)", df)
+plt.tight_layout()
+plt.savefig(current_dir + "/latency_vs_cost_performance.png", dpi=500)
