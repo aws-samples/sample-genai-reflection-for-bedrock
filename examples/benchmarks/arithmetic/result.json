@@ -1,17 +1,23 @@
 {
-    "easy": {
-        "0 reflection": 0.95,
-        "1 reflection": 0.98,
-        "2 reflection": 1.0
+    "Easy": {
+        "0 reflection": 0.84,
+        "1 reflection": 1.0,
+        "2 reflection": 1.0,
+        "3 reflection": 1.0,
+        "5 reflection": 1.0
     },
-    "medium": {
-        "0 reflection": 0.52,
-        "1 reflection": 0.60,
-        "2 reflection": 0.62
+    "Medium": {
+        "0 reflection": 0.47,
+        "1 reflection": 0.55,
+        "2 reflection": 0.58,
+        "3 reflection": 0.61,
+        "5 reflection": 0.62
     },
-    "hard": {
-        "0 reflection": 0.13,
-        "1 reflection": 0.20,
-        "2 reflection": 0.20
+    "Hard": {
+        "0 reflection": 0.22,
+        "1 reflection": 0.28,
+        "2 reflection": 0.30,
+        "3 reflection": 0.30,
+        "5 reflection": 0.31
     }
 }
