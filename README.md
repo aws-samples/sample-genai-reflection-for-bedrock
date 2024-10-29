@@ -14,10 +14,6 @@ The relationship between accuracy, latency, and cost is crucial for selecting a 
 
 > There are more evaluations ongoing for other tasks, please reach out if you have a specific task of interest!
 
-> If you leverage [multiple models](README.md#3-using-multiple-models), your latency will likely not be affected in the same way.
-
-> The time profiling was completed on a personal Isengard account using on-demand models, take it with a pinch of 🧂.
-
 ## 📦 Installation
 
 Follow the [package registry guidance](https://quip-amazon.com/DHVAAHndixT7/GitLab-Package-Registry) to setup a local `pip` configuration for installing GitLab packages.
