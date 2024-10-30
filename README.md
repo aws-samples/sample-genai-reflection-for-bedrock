@@ -16,12 +16,27 @@ The relationship between accuracy, latency, and cost is crucial for selecting a 
 
 ## 📦 Installation
 
-Follow the [package registry guidance](https://quip-amazon.com/DHVAAHndixT7/GitLab-Package-Registry) to setup a local `pip` configuration for installing GitLab packages.
+### Local
 
-Then install the library:
-```bash
-pip install bedrock_hive
-```
+When working on your local machine or virtual machine with ability to create a `pip` config follow these steps:
+
+* Follow the [package registry guidance](https://quip-amazon.com/DHVAAHndixT7/GitLab-Package-Registry) to setup a local `pip` configuration for installing GitLab packages.
+
+* Then install the library:
+    ```bash
+    pip install bedrock_hive
+    ```
+
+### Client
+
+If you find yourself working within a client account and do not have access to your usual pip configuration, the ability to install remote packages, or your GitLab credentials, you can still install Python packages directly from a source wheel file.
+
+* Download the latest `.whl` file from [the package registry](https://gitlab.aws.dev/genaiic-reusable-assets/utilities/bedrock_hive/-/packages) e.g. `bedrock_hive-0.1.0-py3-none-any.whl`
+
+* Then install the library:
+    ```bash
+    pip install bedrock_hive-0.1.0-py3-none-any.whl
+    ```
 
 ## 💬 Usage
 
