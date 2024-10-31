@@ -14,6 +14,13 @@ The relationship between accuracy, latency, and cost is crucial for selecting a 
 
 > There are more evaluations ongoing for other tasks, please reach out if you have a specific task of interest!
 
+## 🧪 Live Playground
+
+An live demo of the app is hosted on the `Hive` page at [http://demo-stl-908936741.us-east-1.elb.amazonaws.com](http://demo-stl-908936741.us-east-1.elb.amazonaws.com) where you can understand the performance of `Hive` on your task and contrast it's answers to single Bedrock calls.
+
+* Username: letmeseeit
+* Password: Testtheapp123@
+
 ## 📦 Installation
 
 ### Local
@@ -182,10 +189,6 @@ print(response)
 ```
 
 You can also apply the verifier from the previous stage in this inference method, applying it independently to each revision from each model.
-
-## 🧪 Live Playground
-
-**TBC**
 
 ## 🤝 Contributors
 
