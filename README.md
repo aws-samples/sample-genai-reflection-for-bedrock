@@ -6,7 +6,13 @@ A configurable extension to Bedrock text generation that enhances reasoning capa
     <img src="./examples/benchmarks/arithmetic/result.png"/>
 </p>
 
-The relationship between accuracy, latency, and cost is crucial for selecting a sampling strategy. Each task or problem domain is likely to have a unique profile, but we can use this specific arithmetic benchmark as a rough guideline. For this task, we see that increasing the number of times a model reflects on its answer provides a performance boost, particularly for harder tasks. Additionally, both latency and cost increase linearly with the number of reflection rounds, as self-reflection maintains a relatively constant number of output tokens, thereby mitigating significant additional costs. Using BedrockHive, users can configure the number of reflection rounds based on the difficulty level and dynamically allocate more compute resources to more challenging problems.
+The tradeoffs between accuracy, latency, and cost is crucial for selecting a sampling strategy. Each task or problem domain is likely to have a unique profile, but we can use this specific arithmetic benchmark as a rough guideline as shown below. Below, are a few representative examples which aim to maximise performance but balance latency and cost across task difficulty levels:
+
+* For Easy tasks, you can achieve a ~ 20% performance increase with 2.8x increased cost and 1.8x increased latency.
+* For Medium tasks, you can achieve a ~ 30% performance increase with 7x increased cost and 4x increased latency.
+* For Hard tasks, you can achieve a ~ 27% increase in performance with 2.8x increased cost and 1.8x increased latency.
+
+Using BedrockHive, users can configure the number of reflection rounds based on the difficulty level and dynamically allocate more compute resources to more challenging problems.
 
 <p align="center" width="100%">
     <img src="./examples/benchmarks/arithmetic/latency_vs_cost_performance.png"/>
