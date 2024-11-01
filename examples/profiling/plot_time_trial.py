@@ -58,7 +58,6 @@ axes[1].set_title("Cost vs Latency", fontsize=24, weight="bold")
 axes[1].legend(title="# Reflections", fontsize=22, title_fontsize="23")
 axes[1].tick_params(axis="both", labelsize=22)
 axes[1].grid(axis="both", linestyle="--", alpha=0.7)
-axes[1].set_ylim(0, 34)
 axes[1].set_xlim(0, 65)
 
 plt.tight_layout()
