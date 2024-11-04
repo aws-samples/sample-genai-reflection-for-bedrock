@@ -102,8 +102,10 @@ You can also optionally pass a `verifier` function to the `HiveConfig` which con
 graph LR;
     A[Input] --> B[Initial Thought]
     B --> V0[Verifier]
+    B --> C
     V0 --> C[Round 1: Revision]
     C --> V1[Verifier]
+    C --> D
     V1 --> D[Round 2: Revision]
     D --> E[Output]
 
