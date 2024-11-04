@@ -1,0 +1,37 @@
+{
+    "battle_death": {
+        "0 reflection": 0.125,
+        "1 reflection": 0.25,
+        "2 reflection": 0.2857,
+        "3 reflection": 0.4,
+        "5 reflection": 0.4
+    },
+    "employee_hire_evaluation": {
+        "0 reflection": 0.18,
+        "1 reflection": 0.44,
+        "2 reflection": 0.47,
+        "3 reflection": 0.5,
+        "5 reflection": 0.5
+    },
+    "voter_1": {
+        "0 reflection": 0.26,
+        "1 reflection": 0.57,
+        "2 reflection": 0.66,
+        "3 reflection": 0.66,
+        "5 reflection": 0.66
+    },
+    "museum_visit": {
+        "0 reflection": 0.16,
+        "1 reflection": 0.75,
+        "2 reflection": 0.75,
+        "3 reflection": 0.75,
+        "5 reflection": 0.75
+    },
+    "orchestra": {
+        "0 reflection": 0.15,
+        "1 reflection": 0.47,
+        "2 reflection": 0.53,
+        "3 reflection": 0.53,
+        "5 reflection": 0.56
+    }
+}

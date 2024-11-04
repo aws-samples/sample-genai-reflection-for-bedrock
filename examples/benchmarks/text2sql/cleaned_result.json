@@ -1,0 +1,22 @@
+{
+    "battle_death": {
+        "Bedrock (single call)": 0.125,
+        "Hive (w/ reflection)": 0.4
+    },
+    "employee_hire": {
+        "Bedrock (single call)": 0.18,
+        "Hive (w/ reflection)": 0.5
+    },
+    "voter_1": {
+        "Bedrock (single call)": 0.26,
+        "Hive (w/ reflection)": 0.66
+    },
+    "museum_visit": {
+        "Bedrock (single call)": 0.16,
+        "Hive (w/ reflection)": 0.75
+    },
+    "orchestra": {
+        "Bedrock (single call)": 0.15,
+        "Hive (w/ reflection)": 0.56
+    }
+}

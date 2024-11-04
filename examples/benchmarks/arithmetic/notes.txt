@@ -4,10 +4,6 @@ leveraging a single 'anthropic.claude-3-sonnet-20240229-v1:0' model
 and multiple rounds of self-reflection on the answers
 without any use of a verifier or aggregation from multiple model samples
 
-Legend:
-- Hive is the best performing BedrockHive configuration
-- Bedrock is a single model call via Bedrock
-
 Data:
 The following snippet generated the questions for each section:
 a, b, c, d, e, f = np.random.randint(0, 50, size=6) # easy

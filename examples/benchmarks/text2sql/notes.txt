@@ -1,0 +1,9 @@
+Overview:
+This was implemented with v0.2.0 of the library,
+leveraging a single 'anthropic.claude-3-sonnet-20240229-v1:0' model
+and multiple rounds of self-reflection on the answers
+with the use of a verifier which ran the code and provided feedback
+
+Data:
+The data was a collection of tables from the spider benchmark and evaluation closely followed the work done in; https://gitlab.aws.dev/genaiic-reusable-assets/utilities/text2sql-spider-evaluation.
+The metric used was the exact match of the generated SQL to the ground truth but we also looked at matching the expected output via different code.

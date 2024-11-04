@@ -1,18 +1,16 @@
 # 🐝 BedrockHive
 
-A configurable extension to Bedrock text generation that enhances reasoning capabilities by enabling additional compute at test time. We have shown that by leveraging up to 5 rounds of BedrockHive self-reflection you can achieve an +40% increase in complex mathematical reasoning performance on the Arithmetic benchmark described [here](./examples/benchmarks/arithmetic/notes.txt).
+A configurable extension to Bedrock text generation that enhances performance by enabling additional compute at test time. Using BedrockHive, we have seen significant performance gains over a single Bedrock call for mathematical reasoning and Text2SQL capabilities.
 
 <p align="center" width="100%">
-    <img src="./examples/benchmarks/arithmetic/result.png"/>
+    <img src="./examples/benchmarks/result.png"/>
 </p>
 
-The tradeoffs between accuracy, latency, and cost is crucial for selecting a sampling strategy. Each task or problem domain is likely to have a unique profile, but we can use this specific arithmetic benchmark as a rough guideline as shown below. Below, are a few representative examples which aim to maximise performance but balance latency and cost across task difficulty levels:
+The tradeoffs between accuracy, latency, and cost is crucial for selecting a sampling strategy. Each task or problem domain is likely to have a unique profile, but we can use this specific arithmetic benchmark as a rough guideline as shown below.
 
 * For Easy tasks, you can achieve a ~ 20% performance increase with 2.8x increased cost and 1.8x increased latency.
 * For Medium tasks, you can achieve a ~ 30% performance increase with 7x increased cost and 4x increased latency.
 * For Hard tasks, you can achieve a ~ 27% increase in performance with 2.8x increased cost and 1.8x increased latency.
-
-Using BedrockHive, users can configure the number of reflection rounds based on the difficulty level and dynamically allocate more compute resources to more challenging problems.
 
 <p align="center" width="100%">
     <img src="./examples/benchmarks/arithmetic/latency_vs_cost_performance.png"/>
