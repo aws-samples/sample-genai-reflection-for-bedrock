@@ -15,7 +15,7 @@ class HiveConfig(pydantic.BaseModel):
     """
 
     bedrock_model_ids: list[str]
-    num_reflections: int = pydantic.Field(ge=0)
+    num_reflections: int = pydantic.Field(default=0, ge=0)
     aggregator_model_id: str | None = None
     verifier: Callable[[str], str] | None = None
 

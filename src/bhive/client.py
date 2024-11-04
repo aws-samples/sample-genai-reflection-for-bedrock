@@ -106,9 +106,16 @@ class Hive:
             )
 
         logger.info(f"Retrieved final answer of {response}")
-        return chat.HiveOutput(response=response, chat_history=chatlog.history)
+        return chat.HiveOutput(
+            response=response,
+            chat_history=chatlog.history,
+            usage=chatlog.usage,
+            metrics=chatlog.metrics,
+        )
 
-    def _converse(self, model_id: str, messages: list[dict], **runtime_kwargs) -> str:
+    def _converse(
+        self, model_id: str, messages: list[dict], **runtime_kwargs
+    ) -> chat.ConverseResponse:
         response = self.runtime_client.converse(
             messages=messages,
             modelId=model_id,
@@ -117,7 +124,10 @@ class Hive:
         status_code = response["ResponseMetadata"]["HTTPStatusCode"]
         if status_code != 200:
             logger.error(f"Converse call failed for {model_id=} with {status_code=}")
-            return "Failed to provide a response."
+            converse_response = chat.ConverseResponse(answer="Failed to provide a response.")
         answer = parse_bedrock_output(response)
+        converse_response = chat.ConverseResponse(
+            answer=answer, usage=response["usage"], metrics=response["metrics"]
+        )
         logger.debug(f"Received answer from {model_id}:\n{answer}")
-        return answer
+        return converse_response

@@ -25,3 +25,4 @@ _build/
 
 # Other
 *.DS_Store
+*.vscode

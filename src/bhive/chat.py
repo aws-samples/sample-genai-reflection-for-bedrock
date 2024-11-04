@@ -2,9 +2,30 @@ from bhive import logger
 import pydantic
 
 
+class ConverseUsage(pydantic.BaseModel):
+    inputTokens: int = 0
+    outputTokens: int = 0
+
+    @property
+    def totalTokens(self) -> int:
+        return self.inputTokens + self.outputTokens
+
+
+class ConverseMetrics(pydantic.BaseModel):
+    latencyMs: int = 0
+
+
+class ConverseResponse(pydantic.BaseModel):
+    answer: str
+    usage: ConverseUsage = ConverseUsage()
+    metrics: ConverseMetrics = ConverseMetrics()
+
+
 class HiveOutput(pydantic.BaseModel):
     response: str | list[str]
     chat_history: dict[str, list[dict]]
+    usage: ConverseUsage
+    metrics: ConverseMetrics
 
 
 class ChatLog:
@@ -14,6 +35,15 @@ class ChatLog:
     def __init__(self, model_ids: list[str]) -> None:
         self.models = model_ids
         self.history: dict[str, list[dict]] = {m: [] for m in model_ids}
+        self.metrics = ConverseMetrics()
+        self.usage = ConverseUsage()
+
+    def update_stats(self, usage: ConverseUsage, metrics: ConverseMetrics):
+        # update usage
+        self.usage.inputTokens += usage.inputTokens
+        self.usage.outputTokens += usage.outputTokens
+        # Update metrics
+        self.metrics.latencyMs += metrics.latencyMs
 
     def add_assistant_msg(self, message: str, modelid: str):
         self._add_msg(message, self._ASSISTANT, modelid)
