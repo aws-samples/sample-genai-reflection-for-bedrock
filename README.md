@@ -16,7 +16,7 @@ The tradeoffs between accuracy, latency, and cost is crucial for selecting a sam
     <img src="./examples/benchmarks/arithmetic/latency_vs_cost_performance.png"/>
 </p>
 
-> There are more evaluations ongoing for other tasks, please reach out if you have a specific task of interest!
+> There are more evaluations ongoing for other tasks, please reach out if you have a specific task of interest! Please see [`examples/benchmarks`](./examples/benchmarks/) for details on specific tasks.
 
 ## 🧪 Live Playground
 
