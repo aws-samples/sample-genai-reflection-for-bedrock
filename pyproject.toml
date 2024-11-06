@@ -1,6 +1,6 @@
 [project]
 name = "bedrock_hive"
-version = "0.2.0"
+version = "0.3.0"
 description = "Library for enabling test-time-compute augmentations in Bedrock"
 authors = [
     {name = "Jack Butler", email = "jackbtlr@amazon.com"},
@@ -29,6 +29,7 @@ dev-dependencies = [
     "pytest-mock>=3.14.0",
     "pytest>=8.3.3",
     "python-dotenv>=1.0.1",
+    "seaborn>=0.13.2",
     "snakeviz>=2.2.0",
     "sphinx-rtd-theme>=3.0.1",
     "sphinx>=8.1.3",

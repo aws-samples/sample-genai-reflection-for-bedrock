@@ -14,18 +14,22 @@ class ConverseUsage(pydantic.BaseModel):
 class ConverseMetrics(pydantic.BaseModel):
     latencyMs: int = 0
 
+    @property
+    def latencySecs(self) -> float:
+        return self.latencyMs / 1000.0
+
 
 class ConverseResponse(pydantic.BaseModel):
     answer: str
-    usage: ConverseUsage = ConverseUsage()
-    metrics: ConverseMetrics = ConverseMetrics()
+    usage: ConverseUsage
+    metrics: ConverseMetrics
 
 
 class HiveOutput(pydantic.BaseModel):
     response: str | list[str]
     chat_history: dict[str, list[dict]]
-    usage: ConverseUsage
-    metrics: ConverseMetrics
+    usage: dict[str, ConverseUsage]
+    metrics: dict[str, ConverseMetrics]
 
 
 class ChatLog:
@@ -35,15 +39,14 @@ class ChatLog:
     def __init__(self, model_ids: list[str]) -> None:
         self.models = model_ids
         self.history: dict[str, list[dict]] = {m: [] for m in model_ids}
-        self.metrics = ConverseMetrics()
-        self.usage = ConverseUsage()
+        self.metrics = {m: ConverseMetrics() for m in model_ids}
+        self.usage = {m: ConverseUsage() for m in model_ids}
 
-    def update_stats(self, usage: ConverseUsage, metrics: ConverseMetrics):
+    def update_stats(self, modelid: str, stats: ConverseResponse):
         # update usage
-        self.usage.inputTokens += usage.inputTokens
-        self.usage.outputTokens += usage.outputTokens
-        # Update metrics
-        self.metrics.latencyMs += metrics.latencyMs
+        self.usage[modelid].inputTokens += stats.usage.inputTokens
+        self.usage[modelid].outputTokens += stats.usage.outputTokens
+        self.metrics[modelid].latencyMs += stats.metrics.latencyMs
 
     def add_assistant_msg(self, message: str, modelid: str):
         self._add_msg(message, self._ASSISTANT, modelid)

@@ -1,9 +1,11 @@
+from typing import Callable
 import functools
 import boto3
 from bhive import inference, logger
 from botocore.config import Config
-from bhive import config, chat
+from bhive import config, chat, cost
 from bhive.utils import parse_bedrock_output
+from bhive.evaluators import answer_in_text, GridResults, TrialResult, BudgetConfig
 
 _RUNTIME_CLIENT_NAME = "bedrock-runtime"
 
@@ -56,7 +58,8 @@ class Hive:
                 raise ValueError("Provided client does not have a 'converse' method.")
             self.runtime_client = client
         else:
-            raise ValueError("Either client_config or client must be provided.")
+            logger.warning("No client or client_config provided. Attempting to create a client.")
+            self.runtime_client = boto3.client(service_name=_RUNTIME_CLIENT_NAME)
 
     def converse(
         self, message: str, config: config.HiveConfig, **converse_kwargs
@@ -73,8 +76,7 @@ class Hive:
                 and the choice of aggregation model.
 
         Returns:
-            chat.HiveOutput: A response object containing the answer and
-                chat history.
+            chat.HiveOutput: A response object containing the answer (or answers if not aggregated) and the full chat history.
         """
         chatlog = chat.ChatLog(config.bedrock_model_ids)
         for m in config.bedrock_model_ids:
@@ -131,3 +133,92 @@ class Hive:
         )
         logger.debug(f"Received answer from {model_id}:\n{answer}")
         return converse_response
+
+    def optimise(
+        self,
+        dataset: list[tuple[str, str]],
+        trial_config: config.TrialConfig,
+        budget_config: BudgetConfig | None = None,
+        evaluator: Callable[[str, str], bool] = answer_in_text,
+        **converse_kwargs,
+    ) -> GridResults:
+        """
+        Optimises hyperparameters to find the best HiveConfig for the given dataset.
+
+        This method performs a grid search over possible hyperparameter configurations
+        defined in the provided `trial_config` and evaluates each configuration's
+        performance using the specified `evaluator`. It tracks the best configuration
+        based on a score and resource usage, and considers a budget constraint if provided.
+
+        Parameters:
+            dataset (list[tuple[str, str]]): A list of (input, expected_output) pairs
+                                            used for evaluating the model.
+            trial_config (config.TrialConfig): Configuration containing the possible
+                                            hyperparameter settings to try.
+            budget_config (BudgetConfig | None, optional): Optional configuration that
+                                                        constrains the inference budget.
+            evaluator (Callable[[str, str], bool], optional): A function that takes
+                                                            a model's output and the expected
+                                                            output to assess performance.
+            **converse_kwargs: Additional keyword arguments passed to the conversation
+                            evaluation process (e.g., specific model parameters).
+
+        Returns:
+            GridResults: An object containing the results of the grid search, including the best performing configuration and its evaluation score.
+        """
+        logger.info("Starting optimisation ...")
+        configs = trial_config._all_configuration_options()
+        logger.info(f"Optimising over {len(configs)} configurations")
+        results = GridResults()
+        for hive_config in configs:
+            # TODO implement smarter stateful pruning of configs
+            ## e.g. if a model is too expensive at 1 round of reflection, exclude anymore
+            try:
+                candidate = self._objective(dataset, hive_config, evaluator, **converse_kwargs)
+                results.individual_results.append(candidate)
+
+                if (
+                    not results.best
+                    or results.best_score(candidate)
+                    or results.better_resource_usage(candidate)
+                ):
+                    # good candidate
+                    if budget_config and not budget_config.check_budget(candidate):
+                        continue
+                    results.best = candidate
+
+            except Exception as e:
+                logger.error(f"Error during optimisation: {e}")
+                continue
+        return results
+
+    def _objective(
+        self,
+        dataset: list[tuple[str, str]],
+        hive_config: config.HiveConfig,
+        evaluator: Callable[[str, str], bool],
+        **converse_kwargs,
+    ) -> TrialResult:
+        """Objective function to optimize the inference method."""
+        correct_responses = 0
+        costs = []
+        latencies = []
+        for message, expected_response in dataset:
+            try:
+                output = self.converse(message, hive_config, **converse_kwargs)
+                answer = output.response
+                costs.append(cost.calculate_cost(output.usage))
+                latencies.append(cost.average_latency(output.metrics))
+                if not isinstance(answer, str):
+                    raise TypeError("Optimisation must be performed with single responses.")
+                if evaluator(expected_response, answer):
+                    correct_responses += 1
+            except Exception as e:
+                logger.error(f"Error during sample inference: {e}")
+                continue
+        return TrialResult(
+            score=correct_responses / len(dataset),
+            config=hive_config,
+            avg_latency_seconds=sum(latencies) / len(latencies),
+            avg_cost_dollars=sum(costs) / len(costs),
+        )

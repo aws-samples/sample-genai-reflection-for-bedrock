@@ -5,13 +5,6 @@ Hive documentation
    :maxdepth: 2
    :caption: Contents:
 
-HiveConfig
------------------
-.. autoclass:: bhive.HiveConfig
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Hive Class
 -----------------
 

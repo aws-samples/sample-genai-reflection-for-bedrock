@@ -63,3 +63,33 @@ class HiveConfig(pydantic.BaseModel):
     @property
     def single_model_multi_call(self) -> bool:
         return self.n_models == 1 and not self.no_reflections
+
+
+class TrialConfig(pydantic.BaseModel):
+    """Configuration class for Hive trials, managing trial settings and validation."""
+
+    bedrock_model_combinations: list[list[str]]
+    reflection_range: list[int] = pydantic.Field(default=[0])
+    aggregator_model_ids: list[str | None] | None = pydantic.Field(default=[None])
+    verifier_functions: list[Callable[[str], str] | None] | None = pydantic.Field(default=[None])
+
+    def _all_configuration_options(self) -> list[HiveConfig]:
+        """Captures all valid combinations for the grid search"""
+        config_params = []
+        verifiers = self.verifier_functions if self.verifier_functions else [None]
+        aggregators = self.aggregator_model_ids if self.aggregator_model_ids else [None]
+        for model_ids in self.bedrock_model_combinations:
+            for reflection_val in self.reflection_range:
+                for verifier in verifiers:
+                    for aggregator in aggregators:
+                        try:
+                            _config = HiveConfig(
+                                bedrock_model_ids=model_ids,
+                                num_reflections=reflection_val,
+                                aggregator_model_id=aggregator,
+                                verifier=verifier,
+                            )
+                            config_params.append(_config)
+                        except Exception as e:
+                            logger.warning(f"Skipping invalid configuration, error:{e}")
+        return config_params

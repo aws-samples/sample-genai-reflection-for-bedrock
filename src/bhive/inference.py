@@ -29,7 +29,7 @@ def single_model_single_call(
         model_id=modelid, messages=chatlog.history[modelid]
     )
     chatlog.add_assistant_msg(response.answer, modelid)
-    chatlog.update_stats(response.usage, response.metrics)
+    chatlog.update_stats(modelid, response)
     return response.answer, chatlog
 
 
@@ -44,7 +44,7 @@ def multi_model_single_call(
     )
     for modelid, response in responses.items():
         chatlog.add_assistant_msg(response.answer, modelid)
-        chatlog.update_stats(response.usage, response.metrics)
+        chatlog.update_stats(modelid, response)
 
     if config.aggregator_model_id:
         # aggregate an answer
@@ -70,7 +70,7 @@ def single_model_multi_call(
             model_id=modelid, messages=chatlog.history[modelid]
         )
         chatlog.add_assistant_msg(response.answer, modelid)
-        chatlog.update_stats(response.usage, response.metrics)
+        chatlog.update_stats(modelid, response)
     return response.answer, chatlog
 
 
@@ -104,7 +104,7 @@ def multi_model_multi_call(
         )
         for modelid, response in responses.items():
             chatlog.add_assistant_msg(response.answer, modelid)
-            chatlog.update_stats(response.usage, response.metrics)
+            chatlog.update_stats(modelid, response)
 
     if config.aggregator_model_id:
         # aggregate an answer

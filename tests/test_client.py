@@ -64,11 +64,6 @@ def should_instantiate_using_client(mock_runtime_client):
     assert bedrock_hive.runtime_client == mock_runtime_client
 
 
-def should_fail_when_using_neither_client_or_config():
-    with pytest.raises(ValueError):
-        client.Hive()
-
-
 def should_fail_when_using_client_and_config():
     with pytest.raises(ValueError):
         client.Hive(client_config="example", client="example")
@@ -87,21 +82,25 @@ def should_return_correct_response(message, mock_runtime_client, response_factor
 def should_correctly_count_tokens(
     input_tokens, output_tokens, mock_runtime_client, response_factory
 ):
+    model_id = "test"
     mock_runtime_client.converse.return_value = response_factory(
         "test", input_tokens=input_tokens, output_tokens=output_tokens
     )
     bedrock_hive = client.Hive(client=mock_runtime_client)
-    _config = config.HiveConfig(bedrock_model_ids=["test"])
+    _config = config.HiveConfig(bedrock_model_ids=[model_id])
     response = bedrock_hive.converse("Hello", _config)
-    assert response.usage.inputTokens == input_tokens
-    assert response.usage.outputTokens == output_tokens
-    assert response.usage.totalTokens == input_tokens + output_tokens
+    assert response.usage[model_id].inputTokens == input_tokens
+    assert response.usage[model_id].outputTokens == output_tokens
+    assert response.usage[model_id].totalTokens == input_tokens + output_tokens
 
 
 @pytest.mark.parametrize("latency_ms", [120, 300])
 def should_correctly_count_latency_ms(latency_ms, mock_runtime_client, response_factory):
-    mock_runtime_client.converse.return_value = response_factory("test", latency_ms=latency_ms)
+    model_id = "test"
+    mock_runtime_client.converse.return_value = response_factory(
+        "testing it", latency_ms=latency_ms
+    )
     bedrock_hive = client.Hive(client=mock_runtime_client)
-    _config = config.HiveConfig(bedrock_model_ids=["test"])
+    _config = config.HiveConfig(bedrock_model_ids=[model_id])
     response = bedrock_hive.converse("Hello", _config)
-    assert response.metrics.latencyMs == latency_ms
+    assert response.metrics[model_id].latencyMs == latency_ms

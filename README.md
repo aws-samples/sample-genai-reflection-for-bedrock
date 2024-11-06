@@ -1,12 +1,14 @@
 # 🐝 BedrockHive
 
-A configurable extension to Bedrock text generation that enhances performance by enabling additional compute at test time. Using BedrockHive, we have seen significant performance gains over a single Bedrock call for mathematical reasoning and Text2SQL capabilities.
+A configurable extension to Bedrock text generation that enhances performance by enabling additional compute at test time. Using BedrockHive, we have seen significant performance gains over a single Bedrock call for mathematical arithmetic and Text2SQL capabilities. Please see [`examples/benchmarks`](./examples/benchmarks/) for implementation details on each task.
 
 <p align="center" width="100%">
     <img src="./examples/benchmarks/result.png"/>
 </p>
 
-The tradeoffs between accuracy, latency, and cost is crucial for selecting a sampling strategy. Each task or problem domain is likely to have a unique profile, but we can use this specific arithmetic benchmark as a rough guideline as shown below.
+> There are more evaluations ongoing for other tasks, please reach out if you have a specific task of interest!
+
+The tradeoff between accuracy, latency, and cost is crucial for selecting an inference strategy. Each task or problem domain is likely to have a unique profile, but we can use this math benchmark as a rough guideline as shown below.
 
 * For Easy tasks, you can achieve a ~ 20% performance increase with 2.8x increased cost and 1.8x increased latency.
 * For Medium tasks, you can achieve a ~ 30% performance increase with 7x increased cost and 4x increased latency.
@@ -16,11 +18,17 @@ The tradeoffs between accuracy, latency, and cost is crucial for selecting a sam
     <img src="./examples/benchmarks/arithmetic/latency_vs_cost_performance.png"/>
 </p>
 
-> There are more evaluations ongoing for other tasks, please reach out if you have a specific task of interest! Please see [`examples/benchmarks`](./examples/benchmarks/) for details on specific tasks.
+The hyperparameter optimisation functionality in BedrockHive allows you to search the space of possible inference options and understand this tradeoff profile for your problem. This helped us discover that, on the Arithmetic (Medium) task, Claude 3 Haiku outperforms Claude 3 Sonnet when both use 3 rounds of self-reflection.
+
+> This allows us to save over 10x on cost and 3x on latency per request!
+
+<p align="center" width="100%">
+    <img src="./examples/optimisation/scatter_grid_search.png"/>
+</p>
 
 ## 🧪 Live Playground
 
-An live demo of the app is hosted on the `Hive` page at [http://demo-stl-908936741.us-east-1.elb.amazonaws.com](http://demo-stl-908936741.us-east-1.elb.amazonaws.com) where you can understand the performance of `Hive` on your task and contrast it's answers to single Bedrock calls.
+An live demo of the app is hosted on the `Hive` page at [http://demo-stl-908936741.us-east-1.elb.amazonaws.com](http://demo-stl-908936741.us-east-1.elb.amazonaws.com) where you can compare BedrockHive to a single Bedrock call on your task.
 
 * Username: letmeseeit
 * Password: Testtheapp123@
@@ -53,21 +61,6 @@ If you find yourself working within a client account and do not have access to y
 
 There are a variety of ways to leverage BedrockHive in your project:
 
-### Client Configuration
-
-Initially, you have to provide BedrockHive with a way of connecting to a bedrock runtime client. You can provide a `botocore.config.Config` and the `Hive` class will create a client from your `AWS_PROFILE` environment variable as shown below:
-
-
-```python
-from botocore.config import Config
-from bhive import Hive, HiveConfig
-
-client_config = Config(region_name="us-east-1", retries={"max_attempts": 5})
-bhive_client = Hive(client_config=client_config)
-```
-
-> You can also create your own custom `boto3` bedrock runtime client and pass that directly to the `Hive` class.
-
 ### 1) Using a Single Model
 
 Now that you've setup the `Hive` client, the easiest way to leverage it in your project is with a single model and an optional number of reflection rounds as shown below. This configuration enables the model to reflect on its' response and apply more compute to solving a more difficult problem.
@@ -81,8 +74,9 @@ graph LR;
 ```
 
 ```python
-from bhive import HiveConfig
+from bhive import Hive, HiveConfig
 
+bhive_client = Hive()
 bhive_config = HiveConfig(
     bedrock_model_ids=["anthropic.claude-3-sonnet-20240229-v1:0"],
     num_reflections=2,
@@ -112,7 +106,9 @@ graph LR;
 ```
 
 ```python
-from bhive import HiveConfig
+from bhive import Hive, HiveConfig
+
+bhive_client = Hive()
 
 def twoplustwo_verifier(context: str) -> str:
     if "4" in context:
@@ -181,7 +177,9 @@ graph LR;
 ```
 
 ```python
-from bhive import HiveConfig
+from bhive import Hive, HiveConfig
+
+bhive_client = Hive()
 
 models = ["anthropic.claude-3-sonnet-20240229-v1:0", "mistral.mistral-large-2402-v1:0"]
 bhive_config = HiveConfig(
@@ -195,6 +193,53 @@ print(response)
 ```
 
 You can also apply the verifier from the previous stage in this inference method, applying it independently to each revision from each model.
+
+### 4) Optimisation
+
+If you are not sure which exact hyperparameter configuration will suit your needs, you can use the BedrockHive hyperparameter optimisation functionality. Here, you can define a set of ranges for the inference parameters such as the Bedrock models or rounds of reflection and these will be evaluated for against a test dataset. You can also specify a budget constraining the maximum cost ($) and maximum latency (seconds) per example.
+
+```mermaid
+graph LR
+    B[Generate all configurations]
+    B --> C[For each config in configurations]
+    C --> D[Evaluate candidate]
+    D --> F{Is candidate better?}
+    F -->|Yes| G[Does the candidate meet the budget constraints?]
+    G -->|Yes| H[Update best candidate]
+    G -->|No| D
+    F -->|No| D
+```
+
+An example implementation in the API is shown below:
+
+```python
+# craft a test dataset of prompt, response pairs
+dataset = [
+    ("What is the capital of France?", "Paris"),
+    ("What is 2 + 2?", "4"),
+    ("Who wrote Hamlet?", "William Shakespeare")
+]
+
+# define a configuration of models and reflections rounds
+trial_config = TrialConfig(
+    bedrock_model_combinations=[
+        ["anthropic.claude-3-sonnet-20240229-v1:0"],
+        ["anthropic.claude-3-haiku-20240307-v1:0"],
+        ["mistral.mistral-small-2402-v1:0"],
+        ["mistral.mistral-large-2402-v1:0"],
+    ],
+    reflection_range=[0, 1, 3],
+    # other parameter ranges / choices
+)
+
+# instantiate a client and run optimise
+hive_client = Hive()
+results = hive_client.optimise(
+    test_dataset, trial_config
+)
+```
+
+> By default `Hive.optimise` will directly compare string responses but you can pick from (and extend) other evaluators available in `bhive.evaluators`.
 
 ## 🤝 Contributors
 
