@@ -1,6 +1,6 @@
 # 🐝 BedrockHive
 
-A configurable extension to Bedrock text generation that enhances performance by enabling additional compute at test time. Using BedrockHive, we have seen significant performance gains over a single Bedrock call for mathematical arithmetic and Text2SQL capabilities. Please see [`examples/benchmarks`](./examples/benchmarks/) for implementation details on each task.
+A configurable extension to Bedrock text generation that enhances performance by enabling additional compute at test time. Using BedrockHive, we have seen significant performance gains over a single Bedrock call for mathematical arithmetic and Text2SQL capabilities. See [`examples/benchmarks`](./examples/benchmarks/) for details on each task.
 
 <p align="center" width="100%">
     <img src="./examples/benchmarks/result.png"/>
