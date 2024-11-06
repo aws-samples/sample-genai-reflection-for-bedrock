@@ -18,7 +18,6 @@ wheels/
 # Static files
 *.prof
 examples/profiling/*.png
-examples/profiling/*.csv
 
 # Sphinx
 _build/
@@ -26,3 +25,4 @@ _build/
 # Other
 *.DS_Store
 *.vscode
+*.sqlite3

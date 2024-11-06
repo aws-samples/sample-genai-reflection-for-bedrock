@@ -1,7 +1,9 @@
 import sys
 from loguru import logger
 from bhive.client import Hive as Hive
-from bhive.config import HiveConfig as HiveConfig
+from bhive.config import HiveConfig as HiveConfig, TrialConfig as TrialConfig
+from bhive.evaluators import BudgetConfig as BudgetConfig
+from bhive.cost import TokenPrices as TokenPrices
 
 LOGGER_LEVELS = ["TRACE", "DEBUG", "INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"]
 
