@@ -234,9 +234,7 @@ trial_config = TrialConfig(
 
 # instantiate a client and run optimise
 hive_client = Hive()
-results = hive_client.optimise(
-    test_dataset, trial_config
-)
+results = hive_client.optimise(dataset, trial_config)
 ```
 
 > By default `Hive.optimise` will directly compare string responses but you can pick from (and extend) other evaluators available in `bhive.evaluators`.
