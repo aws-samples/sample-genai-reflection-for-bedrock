@@ -37,15 +37,14 @@ class Hive:
         """Initializes a Hive instance connected to a Boto3 client.
 
         This constructor either creates a new Boto3 client using the provided
-        `client_config` or uses the existing `client`.
+        `client_config` or uses the existing `client` or trying from local environment.
 
         Parameters:
             client_config (botocore.config.Config | None): Configuration for the Boto3 client.
             client (boto3.Client | None): Existing Boto3 client.
 
         Raises:
-            ValueError: If both `client_config` and `client` are provided,
-                or if neither is provided.
+            ValueError: If both `client_config` and `client` are provided
         """
         if client and client_config:
             raise ValueError("Only one of client or client_config should be provided.")
