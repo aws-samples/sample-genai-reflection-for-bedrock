@@ -49,5 +49,6 @@ def answer_in_text(expected_response: str, generated_response: str) -> bool:
 def answer_in_tags(expected_response: str, generated_response: str, tag: str = "<answer>") -> bool:
     """Parses using the tag and checks against the expected response"""
     generated_response = generated_response.split(tag)[1]
-    generated_response = generated_response.split("</answer>")[0]
+    back_tag = tag.replace("<", "</")
+    generated_response = generated_response.split(back_tag)[0]
     return answers_equal(expected_response, generated_response)
