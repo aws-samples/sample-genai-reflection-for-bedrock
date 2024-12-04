@@ -1,11 +1,24 @@
 import pydantic
+from loguru import logger
 from bhive import cost, config
 
 
 class BudgetConfig(pydantic.BaseModel):
     max_dollar_per_sample: float = pydantic.Field(ge=0.0)
     max_seconds_per_sample: float = pydantic.Field(ge=0.0)
-    cost_dictionary: dict[str, cost.TokenPrices] = cost.MODELID_COSTS_PER_TOKEN
+    cost_dictionary: dict[str, cost.TokenPrices] | None = None
+
+    @pydantic.field_validator("cost_dictionary")
+    def validate_cost_dictionary(cls, v) -> dict[str, cost.TokenPrices]:
+        default_costs = cost.MODELID_COSTS_PER_TOKEN
+        if v is None:
+            logger.warning(
+                "Using default cost dictionary, this is not actively maintained and may be out of date."
+            )
+        else:
+            logger.info("Updating default cost dictionary with custom values.")
+            default_costs.update(v)
+        return default_costs
 
     def check_budget(self, result: "TrialResult") -> bool:
         return (
