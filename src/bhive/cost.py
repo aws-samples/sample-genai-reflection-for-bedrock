@@ -1,3 +1,8 @@
+"""
+Copyright © Amazon.com and Affiliates
+This code is being licensed under the terms of the Amazon Software License available at https://aws.amazon.com/asl/
+"""
+
 # NOTE hardcoded costs is far from ideal
 ## but it's surprisingly hard to programmatically retrieve bedrock costs / token
 ## see > https://amzn-aws.slack.com/archives/C053FAVNMT3/p1718310667442179

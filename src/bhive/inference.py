@@ -1,5 +1,12 @@
+"""
+Copyright © Amazon.com and Affiliates
+This code is being licensed under the terms of the Amazon Software License available at https://aws.amazon.com/asl/
+"""
+
 from typing import Callable
+
 from loguru import logger
+
 from bhive import chat, prompt
 from bhive.config import HiveConfig
 from bhive.utils import parallel_bedrock_exec

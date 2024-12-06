@@ -1,6 +1,13 @@
+"""
+Copyright © Amazon.com and Affiliates
+This code is being licensed under the terms of the Amazon Software License available at https://aws.amazon.com/asl/
+"""
+
 import copy
-from bhive import logger
+
 import pydantic
+
+from bhive import logger
 
 
 class ConverseUsage(pydantic.BaseModel):

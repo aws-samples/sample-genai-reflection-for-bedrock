@@ -1,6 +1,12 @@
+"""
+Copyright © Amazon.com and Affiliates
+This code is being licensed under the terms of the Amazon Software License available at https://aws.amazon.com/asl/
+"""
+
 import concurrent.futures
-from bhive import logger
 from typing import Callable
+
+from bhive import logger
 
 
 def parse_bedrock_output(response: dict) -> str:
