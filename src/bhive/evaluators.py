@@ -1,6 +1,12 @@
+"""
+Copyright © Amazon.com and Affiliates
+This code is being licensed under the terms of the Amazon Software License available at https://aws.amazon.com/asl/
+"""
+
 import pydantic
 from loguru import logger
-from bhive import cost, config
+
+from bhive import config, cost
 
 
 class BudgetConfig(pydantic.BaseModel):

@@ -1,11 +1,17 @@
-from typing import Callable
+"""
+Copyright © Amazon.com and Affiliates
+This code is being licensed under the terms of the Amazon Software License available at https://aws.amazon.com/asl/
+"""
+
 import functools
+from typing import Callable
+
 import boto3
-from bhive import inference, logger
 from botocore.config import Config
-from bhive import config, chat, cost
+
+from bhive import chat, config, cost, inference, logger
+from bhive.evaluators import BudgetConfig, GridResults, TrialResult, answer_in_text
 from bhive.utils import parse_bedrock_output
-from bhive.evaluators import answer_in_text, GridResults, TrialResult, BudgetConfig
 
 _RUNTIME_CLIENT_NAME = "bedrock-runtime"
 

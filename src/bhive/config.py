@@ -1,5 +1,12 @@
-import pydantic
+"""
+Copyright © Amazon.com and Affiliates
+This code is being licensed under the terms of the Amazon Software License available at https://aws.amazon.com/asl/
+"""
+
 from typing import Callable
+
+import pydantic
+
 from bhive import logger
 
 
