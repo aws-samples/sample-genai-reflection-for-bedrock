@@ -43,9 +43,10 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
     "meta.llama3-1-70b-instruct-v1:0": TokenPrices(input_per_1000=0.00099, output_per_1000=0.00099),
     "mistral.mistral-small-2402-v1:0": TokenPrices(input_per_1000=0.001, output_per_1000=0.003),
     "mistral.mistral-large-2402-v1:0": TokenPrices(input_per_1000=0.004, output_per_1000=0.012),
-    "mistral.mistral-large-2402-v1:0": TokenPrices(input_per_1000=0.004, output_per_1000=0.012),
     "mistral.mistral-7b-instruct-v0:2": TokenPrices(input_per_1000=0.00015, output_per_1000=0.0002),
-    "mistral.mixtral-8x7b-instruct-v0:1" TokenPrices(input_per_1000=0.00045, output_per_1000=0.0007),
+    "mistral.mixtral-8x7b-instruct-v0:1": TokenPrices(
+        input_per_1000=0.00045, output_per_1000=0.0007
+    ),
 }
 
 
