@@ -81,8 +81,8 @@ bhive_config = HiveConfig(
     bedrock_model_ids=["anthropic.claude-3-sonnet-20240229-v1:0"],
     num_reflections=2,
 )
-
-response = bhive_client.converse("What is 2 + 2?", bhive_config)
+messages = [{"role": "user", "content": [{"text": "What is 2 + 2?"}]}]
+response = bhive_client.converse(messages, bhive_config)
 print(response)
 ```
 
@@ -122,7 +122,8 @@ bhive_config = HiveConfig(
     verifier=twoplustwo_verifier
 )
 
-response = bhive_client.converse("What is 2 + 2?", bhive_config)
+messages = [{"role": "user", "content": [{"text": "What is 2 + 2?"}]}]
+response = bhive_client.converse(messages, bhive_config)
 print(response)
 ```
 
@@ -188,7 +189,8 @@ bhive_config = HiveConfig(
     aggregator_model_id="anthropic.claude-3-sonnet-20240229-v1:0"
 )
 
-response = bhive_client.converse("What is 2 + 2?", bhive_config)
+messages = [{"role": "user", "content": [{"text": "What is 2 + 2?"}]}]
+response = bhive_client.converse(messages, bhive_config)
 print(response)
 ```
 

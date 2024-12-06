@@ -1,3 +1,4 @@
+import copy
 from bhive import logger
 import pydantic
 
@@ -36,9 +37,9 @@ class ChatLog:
     _USER = "user"
     _ASSISTANT = "assistant"
 
-    def __init__(self, model_ids: list[str]) -> None:
+    def __init__(self, model_ids: list[str], messages: list[dict]) -> None:
         self.models = model_ids
-        self.history: dict[str, list[dict]] = {m: [] for m in model_ids}
+        self.history: dict[str, list[dict]] = {m: copy.deepcopy(messages) for m in model_ids}
         self.metrics = {m: ConverseMetrics() for m in model_ids}
         self.usage = {m: ConverseUsage() for m in model_ids}
 

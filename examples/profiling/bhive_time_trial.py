@@ -37,7 +37,8 @@ def profile_bedrock_hive(models, n_reflections, replicates=N_REPLICATES):
     for _ in range(replicates):
         _config = HiveConfig(bedrock_model_ids=models, num_reflections=n_reflections)
         start_time = time.time()
-        _ = CLIENT.converse(Q, _config)  # same simple question each time
+        messages = [{"role": "user", "content": [{"text": Q}]}]
+        _ = CLIENT.converse(messages, _config)  # same simple question each time
         durations.append(time.time() - start_time)
 
     std_err = statistics.stddev(durations) / math.sqrt(replicates) if replicates > 1 else None

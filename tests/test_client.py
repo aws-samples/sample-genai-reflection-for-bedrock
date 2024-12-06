@@ -74,7 +74,8 @@ def should_return_correct_response(message, mock_runtime_client, response_factor
     mock_runtime_client.converse.return_value = response_factory(message)
     bedrock_hive = client.Hive(client=mock_runtime_client)
     _config = config.HiveConfig(bedrock_model_ids=["test"])
-    response = bedrock_hive.converse("Hello", _config)
+    messages = [{"role": "user", "content": [{"text": "Hello"}]}]
+    response = bedrock_hive.converse(messages, _config)
     assert response.response == message
 
 
@@ -88,7 +89,8 @@ def should_correctly_count_tokens(
     )
     bedrock_hive = client.Hive(client=mock_runtime_client)
     _config = config.HiveConfig(bedrock_model_ids=[model_id])
-    response = bedrock_hive.converse("Hello", _config)
+    messages = [{"role": "user", "content": [{"text": "Hello"}]}]
+    response = bedrock_hive.converse(messages, _config)
     assert response.usage[model_id].inputTokens == input_tokens
     assert response.usage[model_id].outputTokens == output_tokens
     assert response.usage[model_id].totalTokens == input_tokens + output_tokens
@@ -102,5 +104,6 @@ def should_correctly_count_latency_ms(latency_ms, mock_runtime_client, response_
     )
     bedrock_hive = client.Hive(client=mock_runtime_client)
     _config = config.HiveConfig(bedrock_model_ids=[model_id])
-    response = bedrock_hive.converse("Hello", _config)
+    messages = [{"role": "user", "content": [{"text": "Hello"}]}]
+    response = bedrock_hive.converse(messages, _config)
     assert response.metrics[model_id].latencyMs == latency_ms

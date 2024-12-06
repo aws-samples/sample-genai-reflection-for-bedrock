@@ -61,7 +61,7 @@ class Hive:
             self.runtime_client = boto3.client(service_name=_RUNTIME_CLIENT_NAME)
 
     def converse(
-        self, message: str, config: config.HiveConfig, **converse_kwargs
+        self, messages: list[dict], config: config.HiveConfig, **converse_kwargs
     ) -> chat.HiveOutput:
         """Invokes conversation with Hive using inference parameters.
 
@@ -69,18 +69,23 @@ class Hive:
         their responses based on the provided configuration.
 
         Parameters:
-            message (str): A message or task to be solved by the models.
+            messages (list[dict]): A list of Converse API formatted messages.
             config (config.HiveConfig): An inference configuration that outlines
                 the models to be used, the number of rounds of reflection/debate,
                 and the choice of aggregation model.
+            converse_kwargs (dict): Additional keyword arguments to be passed to the converse method.
 
         Returns:
             chat.HiveOutput: A response object containing the answer (or answers if not aggregated) and the full chat history.
         """
-        chatlog = chat.ChatLog(config.bedrock_model_ids)
-        for m in config.bedrock_model_ids:
-            chatlog.add_user_msg(message, m)
-        logger.info(f"Starting reasoning chain with {message=}, {config=} and {converse_kwargs=}")
+        if messages:
+            chatlog = chat.ChatLog(config.bedrock_model_ids, messages)
+        else:
+            raise ValueError("Either a message or messages must be provided.")
+        logger.info(
+            f"Starting reasoning chain with {messages=}, {messages=}, {config=} and {converse_kwargs=}"
+        )
+        message = messages[0].get("content", [{}])[0].get("text")
 
         _converse_func = functools.partial(self._converse, **converse_kwargs)
         response: str | list[str] | None = None
@@ -204,7 +209,8 @@ class Hive:
         latencies = []
         for message, expected_response in dataset:
             try:
-                output = self.converse(message, hive_config, **converse_kwargs)
+                messages = [{"role": "user", "content": [{"text": message}]}]
+                output = self.converse(messages, hive_config, **converse_kwargs)
                 answer = output.response
                 costs.append(cost.calculate_cost(output.usage))
                 latencies.append(cost.average_latency(output.metrics))
