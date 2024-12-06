@@ -2,8 +2,10 @@ import os
 import dotenv
 import argparse
 from botocore.config import Config
-from bhive import Hive, HiveConfig
+from bhive import Hive, HiveConfig, set_logger_level
 import cProfile
+
+set_logger_level("DEBUG")
 
 dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
 dotenv.load_dotenv(dotenv_path)
@@ -26,7 +28,8 @@ def profile_bedrock_hive(models, n_reflections, output_file) -> None:
     pr.enable()
 
     _config = HiveConfig(bedrock_model_ids=models, num_reflections=n_reflections)
-    _ = client.converse("What is 2 + 2?", _config)  # same simple question each time
+    messages = [{"role": "user", "content": [{"text": "What is 2 + 2?"}]}]
+    _ = client.converse(messages, _config)  # same simple question each time
 
     pr.disable()
     pr.dump_stats(output_file)

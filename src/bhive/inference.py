@@ -6,7 +6,7 @@ from bhive.utils import parallel_bedrock_exec
 
 
 def aggregate_last_responses(
-    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str
+    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str | None = None
 ) -> chat.ConverseResponse:
     last_answers = [m[-1]["content"][0]["text"] for m in chatlog.history.values()]
     agg_msg = prompt.aggregate
@@ -14,7 +14,8 @@ def aggregate_last_responses(
         agg_msg += f"\n\nOne agent response: ```{ans}```\n"
         if config.verifier:
             agg_msg += apply_verification(ans, config.verifier)
-    agg_msg += f"\nAs a reminder, the original question is {message}"
+    if message:
+        agg_msg += f"\nAs a reminder, the original question is {message}"
     fmt_msg = chatlog.wrap_user_msg(agg_msg)
     logger.info(f"Aggregating a final response using {config.aggregator_model_id=}")
     return _converse_func(config.aggregator_model_id, [fmt_msg])
@@ -34,7 +35,7 @@ def single_model_single_call(
 
 
 def multi_model_single_call(
-    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str
+    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str | None = None
 ) -> tuple[str | list[str], chat.ChatLog]:
     logger.info(f"Calling {config.bedrock_model_ids} with no self-reflection")
     responses: dict[str, chat.ConverseResponse] = parallel_bedrock_exec(
@@ -54,7 +55,7 @@ def multi_model_single_call(
 
 
 def single_model_multi_call(
-    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str
+    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str | None = None
 ) -> tuple[str, chat.ChatLog]:
     modelid = config.bedrock_model_ids[0]
     logger.info(f"Calling {modelid} with {config.num_reflections} rounds of self-reflection")
@@ -64,7 +65,8 @@ def single_model_multi_call(
             if config.verifier:
                 past_answer = chatlog.get_last_answer(modelid)
                 reflect_msg += apply_verification(past_answer, config.verifier)
-            reflect_msg += f"\nAs a reminder, the original question is {message}"
+            if message:
+                reflect_msg += f"\nAs a reminder, the original question is {message}"
             chatlog.add_user_msg(reflect_msg, modelid)
         response: chat.ConverseResponse = _converse_func(
             model_id=modelid, messages=chatlog.history[modelid]
@@ -75,7 +77,7 @@ def single_model_multi_call(
 
 
 def multi_model_multi_call(
-    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str
+    config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str | None = None
 ) -> tuple[str | list[str], chat.ChatLog]:
     logger.info(f"Calling {config.bedrock_model_ids} with {config.num_reflections} rounds")
     for n_reflect in range(config.num_reflections + 1):
@@ -90,9 +92,9 @@ def multi_model_multi_call(
                     debate_msg += f"\n\nOne agent response: ```{answer_text}```"
                     if config.verifier:
                         debate_msg += apply_verification(answer_text, config.verifier)
-                debate_msg += (
-                    f"\n\n {prompt.careful}\nAs a reminder, the original question is {message}"
-                )
+                debate_msg += f"\n\n {prompt.careful}\n"
+                if message:
+                    debate_msg += f"\nAs a reminder, the original question is {message}"
                 logger.debug(f"Sending request to {modelid}:\n{debate_msg}")
                 chatlog.add_user_msg(debate_msg, modelid)
 
