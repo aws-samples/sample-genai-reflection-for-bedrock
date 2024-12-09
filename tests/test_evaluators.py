@@ -15,13 +15,6 @@ def mock_cost(mocker):
     return test_costs
 
 
-def should_use_default_cost_dictionary_when_none_is_provided(mock_cost):
-    budget_config = BudgetConfig(
-        max_dollar_per_sample=10.0, max_seconds_per_sample=5.0, cost_dictionary=None
-    )
-    assert budget_config.cost_dictionary == mock_cost
-
-
 def should_update_existing_keys_in_cost_dictionary(mock_cost):
     new_costs = {
         "model_a": TokenPrices(

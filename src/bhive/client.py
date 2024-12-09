@@ -123,6 +123,7 @@ class Hive:
             chat_history=chatlog.history,
             usage=chatlog.usage,
             metrics=chatlog.metrics,
+            cost=cost.TotalCost(cost=cost.calculate_cost(chatlog.usage, strict=True)),
         )
 
     def _converse(
@@ -186,11 +187,14 @@ class Hive:
         configs = trial_config._all_configuration_options()
         logger.info(f"Optimising over {len(configs)} configurations")
         results = GridResults()
-        for hive_config in configs:
+        cost_dict = budget_config.cost_dictionary if budget_config else cost.MODELID_COSTS_PER_TOKEN
+        for _config in configs:
             # TODO implement smarter stateful pruning of configs
             ## e.g. if a model is too expensive at 1 round of reflection, exclude anymore
             try:
-                candidate = self._objective(dataset, hive_config, evaluator, **converse_kwargs)
+                candidate = self._objective(
+                    dataset, _config, evaluator, cost_dict, **converse_kwargs
+                )
                 results.individual_results.append(candidate)
 
                 if (
@@ -213,6 +217,7 @@ class Hive:
         dataset: list[tuple[str, str]],
         hive_config: config.HiveConfig,
         evaluator: Callable[[str, str], bool],
+        cost_dictionary: dict[str, cost.TokenPrices],
         **converse_kwargs,
     ) -> TrialResult:
         """Objective function to optimize the inference method."""
@@ -224,7 +229,7 @@ class Hive:
                 messages = [{"role": "user", "content": [{"text": message}]}]
                 output = self.converse(messages, hive_config, **converse_kwargs)
                 answer = output.response
-                costs.append(cost.calculate_cost(output.usage))
+                costs.append(cost.calculate_cost(output.usage, cost_dictionary, strict=True))
                 latencies.append(cost.average_latency(output.metrics))
                 if not isinstance(answer, str):
                     raise TypeError("Optimisation must be performed with single responses.")

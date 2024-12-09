@@ -9,8 +9,7 @@ This code is being licensed under the terms of the Amazon Software License avail
 ## somebody please help if a better way is discovered :pray
 
 import pydantic
-
-from bhive.chat import ConverseMetrics, ConverseUsage
+from loguru import logger
 
 
 class TokenPrices(pydantic.BaseModel):
@@ -55,21 +54,50 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
 }
 
 
-def calculate_model_cost(modelid: str, input_tokens: int, output_tokens: int) -> float:
-    model_cost = MODELID_COSTS_PER_TOKEN.get(modelid)
-    if not model_cost:
-        raise ValueError(
-            f"Model {modelid} not found in cost table, override `BudgetConfig.cost_dictionary.`"
-        )
-    input_price = model_cost.input_per_1000 * (input_tokens / 1000)
-    output_price = model_cost.output_per_1000 * (output_tokens / 1000)
+class ConverseUsage(pydantic.BaseModel):
+    inputTokens: int = 0
+    outputTokens: int = 0
+
+    @property
+    def totalTokens(self) -> int:
+        return self.inputTokens + self.outputTokens
+
+
+class ConverseMetrics(pydantic.BaseModel):
+    latencyMs: int = 0
+
+    @property
+    def latencySecs(self) -> float:
+        return self.latencyMs / 1000.0
+
+
+class TotalCost(pydantic.BaseModel):
+    cost: float = pydantic.Field(ge=0.0)
+    currency: str = "USD"
+
+
+def calculate_model_cost(cost_per_token: TokenPrices, usage: ConverseUsage) -> float:
+    input_price = cost_per_token.input_per_1000 * (usage.inputTokens / 1000)
+    output_price = cost_per_token.output_per_1000 * (usage.outputTokens / 1000)
     return input_price + output_price
 
 
-def calculate_cost(usage: dict[str, ConverseUsage]) -> float:
+def calculate_cost(
+    usage: dict[str, ConverseUsage],
+    cost_dictionary: dict[str, TokenPrices] = MODELID_COSTS_PER_TOKEN,
+    strict: bool = False,  # enforces that all models exist
+) -> float:
     total_cost = 0.0
     for modelid, tokens in usage.items():
-        total_cost += calculate_model_cost(modelid, tokens.inputTokens, tokens.outputTokens)
+        cost_per_token = cost_dictionary.get(modelid)
+        if cost_per_token:
+            total_cost += calculate_model_cost(cost_per_token, tokens)
+        else:
+            msg = f"{modelid} not found in cost table, add to `BudgetConfig.cost_dictionary.`"
+            logger.warning(msg)
+            if strict:
+                raise ValueError(msg)
+
     return total_cost
 
 

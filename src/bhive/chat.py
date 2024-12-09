@@ -8,23 +8,7 @@ import copy
 import pydantic
 
 from bhive import logger
-
-
-class ConverseUsage(pydantic.BaseModel):
-    inputTokens: int = 0
-    outputTokens: int = 0
-
-    @property
-    def totalTokens(self) -> int:
-        return self.inputTokens + self.outputTokens
-
-
-class ConverseMetrics(pydantic.BaseModel):
-    latencyMs: int = 0
-
-    @property
-    def latencySecs(self) -> float:
-        return self.latencyMs / 1000.0
+from bhive.cost import ConverseMetrics, ConverseUsage, TotalCost
 
 
 class ConverseResponse(pydantic.BaseModel):
@@ -38,6 +22,7 @@ class HiveOutput(pydantic.BaseModel):
     chat_history: dict[str, list[dict]]
     usage: dict[str, ConverseUsage]
     metrics: dict[str, ConverseMetrics]
+    cost: TotalCost
 
 
 class ChatLog:
@@ -48,7 +33,7 @@ class ChatLog:
         self.models = model_ids
         self.history: dict[str, list[dict]] = {m: copy.deepcopy(messages) for m in model_ids}
         self.metrics = {m: ConverseMetrics() for m in model_ids}
-        self.usage = {m: ConverseUsage() for m in model_ids}
+        self.usage = {m: ConverseUsage(modelid=m) for m in model_ids}
 
     def update_stats(self, modelid: str, stats: ConverseResponse):
         # update usage

@@ -12,7 +12,7 @@ from bhive import config, cost
 class BudgetConfig(pydantic.BaseModel):
     max_dollar_per_sample: float = pydantic.Field(ge=0.0)
     max_seconds_per_sample: float = pydantic.Field(ge=0.0)
-    cost_dictionary: dict[str, cost.TokenPrices] | None = None
+    cost_dictionary: dict[str, cost.TokenPrices] = cost.MODELID_COSTS_PER_TOKEN
 
     @pydantic.field_validator("cost_dictionary")
     def validate_cost_dictionary(cls, v) -> dict[str, cost.TokenPrices]:
