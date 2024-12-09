@@ -93,7 +93,7 @@ def calculate_cost(
         if cost_per_token:
             total_cost += calculate_model_cost(cost_per_token, tokens)
         else:
-            msg = f"{modelid} not found in cost table, add to `BudgetConfig.cost_dictionary.`"
+            msg = f"{modelid} not found in cost_dictionary and will not be included in total."
             logger.warning(msg)
             if strict:
                 raise ValueError(msg)
