@@ -128,11 +128,17 @@ class Hive:
     def _converse(
         self, model_id: str, messages: list[dict], **runtime_kwargs
     ) -> chat.ConverseResponse:
-        response = self.runtime_client.converse(
-            messages=messages,
-            modelId=model_id,
-            **runtime_kwargs,
-        )
+        try:
+            response = self.runtime_client.converse(
+                messages=messages,
+                modelId=model_id,
+                **runtime_kwargs,
+            )
+        except Exception as e:
+            logger.error(
+                f"Converse call failed for {model_id=} with {messages=} and {runtime_kwargs=}"
+            )
+            raise e
         status_code = response["ResponseMetadata"]["HTTPStatusCode"]
         if status_code != 200:
             logger.error(f"Converse call failed for {model_id=} with {status_code=}")
