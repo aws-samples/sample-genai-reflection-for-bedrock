@@ -13,11 +13,7 @@ dotenv.load_dotenv(dotenv_path)
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # Available models and configuration
-AVAILABLE_MODELS = [
-    "anthropic.claude-3-sonnet-20240229-v1:0",
-    "mistral.mistral-large-2402-v1:0",
-    "amazon.titan-text-premier-v1:0",
-]
+AVAILABLE_MODELS = ["anthropic.claude-3-sonnet-20240229-v1:0", "mistral.mistral-large-2402-v1:0"]
 BEDROCK_CONFIG = Config(region_name="us-east-1")
 
 client = Hive(client_config=BEDROCK_CONFIG)
@@ -29,7 +25,8 @@ def profile_bedrock_hive(models, n_reflections, output_file) -> None:
 
     _config = HiveConfig(bedrock_model_ids=models, num_reflections=n_reflections)
     messages = [{"role": "user", "content": [{"text": "What is 2 + 2?"}]}]
-    _ = client.converse(messages, _config)  # same simple question each time
+    _out = client.converse(messages, _config)  # same simple question each time
+    print(_out)
 
     pr.disable()
     pr.dump_stats(output_file)
