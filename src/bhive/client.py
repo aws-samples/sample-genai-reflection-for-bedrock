@@ -84,13 +84,8 @@ class Hive:
         Returns:
             chat.HiveOutput: A response object containing the answer (or answers if not aggregated) and the full chat history.
         """
-        if messages:
-            chatlog = chat.ChatLog(config.bedrock_model_ids, messages)
-        else:
-            raise ValueError("Either a message or messages must be provided.")
-        logger.info(
-            f"Starting reasoning chain with {messages=}, {messages=}, {config=} and {converse_kwargs=}"
-        )
+        chatlog = chat.ChatLog(config.bedrock_model_ids, messages)
+        logger.info(f"Starting inference with {config=} and {converse_kwargs=}")
         message = messages[0].get("content", [{}])[0].get("text")
 
         _converse_func = functools.partial(self._converse, **converse_kwargs)
