@@ -89,6 +89,9 @@ def calculate_cost(
 ) -> float:
     total_cost = 0.0
     for modelid, tokens in usage.items():
+        if modelid.startswith(("us.", "eu.")):
+            logger.info("Removing cross-region prefix from the model ID")
+            modelid = modelid.split(".", 1)[1]
         cost_per_token = cost_dictionary.get(modelid)
         if cost_per_token:
             total_cost += calculate_model_cost(cost_per_token, tokens)
