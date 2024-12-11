@@ -60,7 +60,6 @@ if __name__ == "__main__":
         for n_reflections in [0, 1, 2, 3, 5]:  # number of reflections
             print(f"PROFILING {models=} AND {n_reflections=}\n")
             results = profile_bedrock_hive(models, n_reflections)
-            time.sleep(5)
             all_results.append(results)
 
     # Convert results to DataFrame and save as JSON
