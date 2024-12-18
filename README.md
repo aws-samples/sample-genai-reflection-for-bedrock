@@ -50,11 +50,11 @@ When working on your local machine or virtual machine with ability to create a `
 
 If you find yourself working within a client account and do not have access to your usual pip configuration, the ability to install remote packages, or your GitLab credentials, you can still install Python packages directly from a source wheel file.
 
-* Download the latest `.whl` file from [the package registry](https://gitlab.aws.dev/genaiic-reusable-assets/utilities/bedrock_hive/-/packages) e.g. `bedrock_hive-0.1.0-py3-none-any.whl`
+* Download the latest `.whl` file from [the package registry](https://gitlab.aws.dev/genaiic-reusable-assets/utilities/bedrock_hive/-/packages) e.g. `bedrock_hive-<version>-py3-none-any.whl`
 
 * Then install the library:
     ```bash
-    pip install bedrock_hive-0.1.0-py3-none-any.whl
+    pip install bedrock_hive-<version>-py3-none-any.whl
     ```
 
 ## 💬 Usage
@@ -291,7 +291,7 @@ logger.add(sys.stderr, level="<level>") # adds a logger with DEBUG or WARNING or
 > The model must support conversation history to be used, this rules out certain models such as `Jurassic-2 Ultra` which do not have this capability.
 
 2. Does it support multimodal queries?
-> At the moment we only support text generation but this may be added in the future.
+> Yes, it mirrors the BedrockRuntime `converse()` messages structure and will perform inference with any modality.
 
 3. Can I authenticate with my own `boto3` client?
 > Yes, you can pass an initialised client instance to the `Hive` class, otherwise we will try to create a client from the `AWS_PROFILE` environment variable.
