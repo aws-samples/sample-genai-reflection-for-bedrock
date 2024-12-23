@@ -6,9 +6,7 @@ A configurable extension to Bedrock which enhances performance by enabling addit
     <img src="./examples/benchmarks/result.png"/>
 </p>
 
-> See [`examples/benchmarks`](./examples/benchmarks/) for details on each task.
-
-> There are more [evaluations ongoing](./EXPERIMENTS.md), please reach out if you have a specific task of interest!
+> See [task details](./examples/benchmarks/) and [expanded evaluation results](./EXPERIMENTS.md) for more information!
 
 ## 🧪 Live Playground
 
