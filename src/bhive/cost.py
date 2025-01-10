@@ -19,27 +19,27 @@ class TokenPrices(pydantic.BaseModel):
 
 
 MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
-    "anthropic.claude-3-5-haiku-20241022-v1:0": TokenPrices(
-        input_per_1000=0.008, output_per_1000=0.004
-    ),
+    "amazon.nova-pro-v1:0": TokenPrices(input_per_1000=0.0008, output_per_1000=0.0032),
+    "amazon.nova-lite-v1:0": TokenPrices(input_per_1000=0.00006, output_per_1000=0.00024),
+    "amazon.nova-micro-v1:0": TokenPrices(input_per_1000=0.000035, output_per_1000=0.00014),
     "anthropic.claude-3-haiku-20240307-v1:0": TokenPrices(
         input_per_1000=0.00025, output_per_1000=0.00125
-    ),
-    "anthropic.claude-3-5-sonnet-20241022-v2:0": TokenPrices(
-        input_per_1000=0.003, output_per_1000=0.015
-    ),
-    "anthropic.claude-3-5-sonnet-20240620-v1:0": TokenPrices(
-        input_per_1000=0.003, output_per_1000=0.015
-    ),
-    "anthropic.claude-3-sonnet-20240229-v1:0": TokenPrices(
-        input_per_1000=0.003, output_per_1000=0.015
     ),
     "anthropic.claude-3-opus-20240229-v1:0": TokenPrices(
         input_per_1000=0.015, output_per_1000=0.075
     ),
-    "amazon.nova-pro-v1:0": TokenPrices(input_per_1000=0.0008, output_per_1000=0.0032),
-    "amazon.nova-lite-v1:0": TokenPrices(input_per_1000=0.00006, output_per_1000=0.00024),
-    "amazon.nova-micro-v1:0": TokenPrices(input_per_1000=0.000035, output_per_1000=0.00014),
+    "anthropic.claude-3-sonnet-20240229-v1:0": TokenPrices(
+        input_per_1000=0.003, output_per_1000=0.015
+    ),
+    "anthropic.claude-3-5-haiku-20241022-v1:0": TokenPrices(
+        input_per_1000=0.0008, output_per_1000=0.004
+    ),
+    "anthropic.claude-3-5-sonnet-20240620-v1:0": TokenPrices(
+        input_per_1000=0.003, output_per_1000=0.015
+    ),
+    "anthropic.claude-3-5-sonnet-20241022-v2:0": TokenPrices(
+        input_per_1000=0.003, output_per_1000=0.015
+    ),
     "meta.llama3-2-90b-instruct-v1:0": TokenPrices(input_per_1000=0.00072, output_per_1000=0.00072),
     "meta.llama3-2-11b-instruct-v1:0": TokenPrices(input_per_1000=0.00016, output_per_1000=0.00016),
     "meta.llama3-2-3b-instruct-v1:0": TokenPrices(input_per_1000=0.00015, output_per_1000=0.00015),
@@ -72,7 +72,7 @@ class ConverseMetrics(pydantic.BaseModel):
 
 
 class TotalCost(pydantic.BaseModel):
-    cost: float = pydantic.Field(ge=0.0)
+    value: float = pydantic.Field(ge=0.0)
     currency: str = "USD"
 
 

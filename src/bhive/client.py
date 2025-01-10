@@ -118,7 +118,7 @@ class Hive:
             chat_history=chatlog.history,
             usage=chatlog.usage,
             metrics=chatlog.metrics,
-            cost=cost.TotalCost(cost=cost.calculate_cost(chatlog.usage)),
+            cost=cost.TotalCost(value=cost.calculate_cost(chatlog.usage)),
         )
 
     def _converse(
