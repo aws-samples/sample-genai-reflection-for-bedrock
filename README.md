@@ -227,9 +227,9 @@ results = hive_client.optimise(dataset, trial_config)
 
 ### Team
 
-| ![badge](https://internal-cdn.amazon.com/badgephotos.amazon.com/?uid=jackbtlr) |
-|----|
-| [Jack Butler](https://phonetool.amazon.com/users/jackbtlr) |
+| ![badge](https://internal-cdn.amazon.com/badgephotos.amazon.com/?uid=jackbtlr) | ![badge](https://internal-cdn.amazon.com/badgephotos.amazon.com/?uid=kozodoi) |
+|----|----|
+| [Jack Butler](https://phonetool.amazon.com/users/jackbtlr) | [Nikita Kozodoi](https://phonetool.amazon.com/users/kozodoi) |
 
 Chat to the team if you have new feature suggestions or bug fixes!
 
