@@ -3,7 +3,6 @@ image: python:3.12
 stages:
   - lint
   - test
-  - docs
   - deploy
 
 before_script:
@@ -21,18 +20,6 @@ test:
     - pip install pytest pytest-mock
     - pip install .
     - pytest
-
-build_pages:
-  stage: docs
-  script:
-    - pip install sphinx sphinx-rtd-theme
-    - pip install .
-    - sphinx-build -b html docs public # deploy to gitlab pages
-  artifacts:
-    paths:
-      - public
-  only:
-    - main # only run for main branch
 
 build_package:
   stage: deploy

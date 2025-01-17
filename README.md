@@ -255,12 +255,6 @@ uv run pre-commit run # runs pre-commit stack
 uv run pytest -v # runs tests
 ```
 
-Package documentation is handled via [`sphinx`](https://www.sphinx-doc.org/en/) and can be built by running:
-```bash
-uv run sphinx-build -b html docs _build/html # builds documentation
-open _build/html/index.html # views it locally
-```
-
 Logging is handled via [`loguru`](https://github.com/Delgan/loguru) as it's very simple to use and sufficient for most use cases. It is by default set to the `INFO` level but developers can change it to `DEBUG` to see more detailed output or `WARNING` to see less by running the following snippet locally:
 
 ```python

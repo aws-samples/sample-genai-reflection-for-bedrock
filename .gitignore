@@ -19,9 +19,6 @@ wheels/
 *.prof
 examples/profiling/*.png
 
-# Sphinx
-_build/
-
 # Other
 *.DS_Store
 *.vscode
