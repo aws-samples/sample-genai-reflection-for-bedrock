@@ -79,6 +79,19 @@ def should_return_correct_response(message, mock_runtime_client, response_factor
     assert response.response == message
 
 
+@pytest.mark.parametrize("message", ["test", "test2"])
+def should_return_correct_response_for_both_model_instances(
+    message, mock_runtime_client, response_factory
+):
+    mock_runtime_client.converse.return_value = response_factory(message)
+    bedrock_hive = client.Hive(client=mock_runtime_client)
+    _config = config.HiveConfig(bedrock_model_ids=["test"] * 2)
+    messages = [{"role": "user", "content": [{"text": "Hello"}]}]
+    response = bedrock_hive.converse(messages, _config)
+    assert len(response.response) == 2
+    assert all([answer == message for answer in response.response])
+
+
 @pytest.mark.parametrize("input_tokens, output_tokens", [(5, 10), (200, 100)])
 def should_correctly_count_tokens(
     input_tokens, output_tokens, mock_runtime_client, response_factory

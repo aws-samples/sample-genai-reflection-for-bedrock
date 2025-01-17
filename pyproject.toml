@@ -1,6 +1,6 @@
 [project]
 name = "bedrock_hive"
-version = "0.5.2"
+version = "0.6.0"
 description = "Library for enabling test-time-compute augmentations in Bedrock"
 authors = [
     {name = "Jack Butler", email = "jackbtlr@amazon.com"},

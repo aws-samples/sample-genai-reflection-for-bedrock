@@ -57,5 +57,11 @@ if __name__ == "__main__":
         # Multi-model call with 2 reflections
         print("Profiling multiple models with 2 reflections")
         profile_bedrock_hive(AVAILABLE_MODELS, 2, output_file)
+    elif args.choice == 4:
+        print("Profiling same model twice with 0 reflections")
+        profile_bedrock_hive([AVAILABLE_MODELS[0]] * 2, 0, output_file)
+    elif args.choice == 5:
+        print("Profiling same model twice with 2 reflections")
+        profile_bedrock_hive([AVAILABLE_MODELS[0]] * 2, 2, output_file)
     else:
-        print("Invalid choice. Please provide an integer between 0 and 3 inclusive.")
+        print("Invalid choice. Please provide an integer between 0 and 5 inclusive.")

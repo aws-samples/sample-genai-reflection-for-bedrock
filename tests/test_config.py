@@ -25,12 +25,3 @@ def should_raise_error_for_invalid_num_reflections(num_reflections: int):
             num_reflections=num_reflections,
             aggregator_model_id="FAKE_MODEL",
         )
-
-
-def should_raise_error_for_duplicate_model_ids():
-    with pytest.raises(ValueError):
-        HiveConfig(
-            bedrock_model_ids=["FAKE_MODEL", "FAKE_MODEL"],
-            num_reflections=10,
-            aggregator_model_id="FAKE_MODEL",
-        )

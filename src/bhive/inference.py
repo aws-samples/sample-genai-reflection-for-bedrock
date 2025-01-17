@@ -15,9 +15,8 @@ from bhive.utils import parallel_bedrock_exec
 def aggregate_last_responses(
     config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str | None = None
 ) -> chat.ConverseResponse:
-    last_answers = [m[-1]["content"][0]["text"] for m in chatlog.history.values()]
     agg_msg = prompt.aggregate
-    for ans in last_answers:
+    for ans in chatlog.get_all_last_text_answers():
         agg_msg += f"\n\nOne agent response: ```{ans}```\n"
         if config.verifier:
             agg_msg += apply_verification(ans, config.verifier)
@@ -34,9 +33,9 @@ def single_model_single_call(
     modelid = config.bedrock_model_ids[0]
     logger.info(f"Calling {modelid} with no self-reflection")
     response: chat.ConverseResponse = _converse_func(
-        model_id=modelid, messages=chatlog.history[modelid]
+        model_id=modelid, messages=chatlog.history[0].chat_history
     )
-    chatlog.add_assistant_msg(response.answer, modelid)
+    chatlog.add_assistant_msg(response.answer, 0)
     chatlog.update_stats(modelid, response)
     return response.answer, chatlog
 
@@ -45,20 +44,18 @@ def multi_model_single_call(
     config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str | None = None
 ) -> tuple[str | list[str], chat.ChatLog]:
     logger.info(f"Calling {config.bedrock_model_ids} with no self-reflection")
-    responses: dict[str, chat.ConverseResponse] = parallel_bedrock_exec(
-        _converse_func,
-        model_ids=config.bedrock_model_ids,
-        chathistory=chatlog.history,
+    responses: dict[tuple[int, str], chat.ConverseResponse] = parallel_bedrock_exec(
+        _converse_func, chathistory=chatlog.history
     )
-    for modelid, response in responses.items():
-        chatlog.add_assistant_msg(response.answer, modelid)
+    for (index, modelid), response in responses.items():
+        chatlog.add_assistant_msg(response.answer, index)
         chatlog.update_stats(modelid, response)
 
     if config.aggregator_model_id:
         # aggregate an answer
         return aggregate_last_responses(config, chatlog, _converse_func, message), chatlog
     else:
-        return [m[-1]["content"][0]["text"] for m in chatlog.history.values()], chatlog
+        return chatlog.get_all_last_text_answers(), chatlog
 
 
 def single_model_multi_call(
@@ -70,15 +67,15 @@ def single_model_multi_call(
         if 0 < n_reflect:
             reflect_msg = prompt.reflect + "\n"
             if config.verifier:
-                past_answer = chatlog.get_last_answer(modelid)
+                past_answer = chatlog.get_last_answer(invoke_index=0)
                 reflect_msg += apply_verification(past_answer, config.verifier)
             if message:
                 reflect_msg += f"\nAs a reminder, the original question is {message}"
-            chatlog.add_user_msg(reflect_msg, modelid)
+            chatlog.add_user_msg(reflect_msg, invoke_index=0)
         response: chat.ConverseResponse = _converse_func(
-            model_id=modelid, messages=chatlog.history[modelid]
+            model_id=modelid, messages=chatlog.history[0].chat_history
         )
-        chatlog.add_assistant_msg(response.answer, modelid)
+        chatlog.add_assistant_msg(response.answer, invoke_index=0)
         chatlog.update_stats(modelid, response)
     return response.answer, chatlog
 
@@ -90,8 +87,8 @@ def multi_model_multi_call(
     for n_reflect in range(config.num_reflections + 1):
         if 0 < n_reflect:
             # consider others & debate
-            for modelid in config.bedrock_model_ids:
-                recent_other_answers = chatlog.get_recent_other_answers(modelid)
+            for index, model_log in enumerate(chatlog.history):
+                recent_other_answers = chatlog.get_recent_other_answers(index)
                 debate_msg = prompt.debate
                 for recent_ans in recent_other_answers:
                     # NOTE could alternatively summarise messages
@@ -102,24 +99,22 @@ def multi_model_multi_call(
                 debate_msg += f"\n\n {prompt.careful}\n"
                 if message:
                     debate_msg += f"\nAs a reminder, the original question is {message}"
-                logger.debug(f"Sending request to {modelid}:\n{debate_msg}")
-                chatlog.add_user_msg(debate_msg, modelid)
+                logger.debug(f"Sending request to {model_log.modelid}:\n{debate_msg}")
+                chatlog.add_user_msg(debate_msg, index)
 
         logger.info(f"Fetching debate #{n_reflect+1} answers from all {config.bedrock_model_ids=}")
-        responses: dict[str, chat.ConverseResponse] = parallel_bedrock_exec(
-            _converse_func,
-            model_ids=config.bedrock_model_ids,
-            chathistory=chatlog.history,
+        responses: dict[tuple[int, str], chat.ConverseResponse] = parallel_bedrock_exec(
+            _converse_func, chathistory=chatlog.history
         )
-        for modelid, response in responses.items():
-            chatlog.add_assistant_msg(response.answer, modelid)
+        for (index, modelid), response in responses.items():
+            chatlog.add_assistant_msg(response.answer, index)
             chatlog.update_stats(modelid, response)
 
     if config.aggregator_model_id:
         # aggregate an answer
         return aggregate_last_responses(config, chatlog, _converse_func, message), chatlog
     else:
-        return [m[-1]["content"][0]["text"] for m in chatlog.history.values()], chatlog
+        return chatlog.get_all_last_text_answers(), chatlog
 
 
 def apply_verification(past_answer: str, verifier: Callable[[str], str]) -> str:

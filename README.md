@@ -176,6 +176,52 @@ response = bhive_client.converse(messages, bhive_config)
 print(response)
 ```
 
+This can also be done with multiple instances of the same model by modifying the list as shown in the diagram and code below:
+
+```mermaid
+graph LR;
+    A[Input] --> B1[Initial Thought]
+    A[Input] --> B2[Initial Thought]
+
+    B1 --> C1[Round 1: Revision]
+    B2 --> C1
+    B2 --> C2[Round 1: Revision]
+    B1 --> C2
+
+    C1 --> D1[Round 2: Revision]
+    C2 --> D1
+    C2 --> D2[Round 2: Revision]
+    C1 --> D2
+
+    D2 --> AG
+    D1 --> AG[Aggregator]
+    AG --> E[Output]
+
+    style B1 fill:#005f99,stroke:#333,stroke-width:2px;
+    style B2 fill:#005f99,stroke:#333,stroke-width:2px;
+    style C1 fill:#005f99,stroke:#333,stroke-width:2px;
+    style C2 fill:#005f99,stroke:#333,stroke-width:2px;
+    style D1 fill:#005f99,stroke:#333,stroke-width:2px;
+    style D2 fill:#005f99,stroke:#333,stroke-width:2px;
+```
+
+```python
+from bhive import Hive, HiveConfig
+
+bhive_client = Hive()
+
+models = ["anthropic.claude-3-sonnet-20240229-v1:0", "anthropic.claude-3-sonnet-20240229-v1:0"]
+bhive_config = HiveConfig(
+    bedrock_model_ids=models,
+    num_reflections=2,
+    aggregator_model_id="anthropic.claude-3-sonnet-20240229-v1:0"
+)
+
+messages = [{"role": "user", "content": [{"text": "What is 2 + 2?"}]}]
+response = bhive_client.converse(messages, bhive_config)
+print(response)
+```
+
 You can also apply the verifier from the previous stage in this inference method, applying it independently to each revision from each model.
 
 ### 4) Optimisation

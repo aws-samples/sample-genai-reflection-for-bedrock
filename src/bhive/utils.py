@@ -7,6 +7,7 @@ import concurrent.futures
 from typing import Callable
 
 from bhive import logger
+from bhive.chat import ModelChatLog
 
 
 def parse_bedrock_output(response: dict) -> str:
@@ -18,19 +19,18 @@ def parse_bedrock_output(response: dict) -> str:
     return replies[0]["text"]
 
 
-def parallel_bedrock_exec(
-    func: Callable, model_ids: list[str], chathistory: dict[str, list[dict]]
-) -> dict:
+def parallel_bedrock_exec(func: Callable, chathistory: list[ModelChatLog]) -> dict:
     outputs = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         future_to_input = {
-            executor.submit(func, mo, me): mo for mo, me in zip(model_ids, chathistory.values())
+            executor.submit(func, log.modelid, log.chat_history): (i, log.modelid)
+            for i, log in enumerate(chathistory)
         }
         for future in concurrent.futures.as_completed(future_to_input):
-            mo = future_to_input[future]
+            index, modelid = future_to_input[future]
             try:
                 data = future.result()
-                outputs[mo] = data
+                outputs[(index, modelid)] = data
             except Exception as exc:
                 raise exc
     return outputs

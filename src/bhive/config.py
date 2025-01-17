@@ -33,14 +33,6 @@ class HiveConfig(pydantic.BaseModel):
             raise ValueError("bedrock_model_ids must have at least one model.")
         return v
 
-    @pydantic.field_validator("bedrock_model_ids")
-    @classmethod
-    def ensure_no_duplicates(cls, v: list[str]) -> list[str]:
-        # currently cannot support duplicates of same model
-        if len(v) != len(set(v)):
-            raise ValueError("bedrock_model_ids must have no duplicate model ids.")
-        return v
-
     @pydantic.model_validator(mode="after")
     def validate_configuration(self: "HiveConfig") -> "HiveConfig":
         if self.n_models > 1 and not self.aggregator_model_id:
