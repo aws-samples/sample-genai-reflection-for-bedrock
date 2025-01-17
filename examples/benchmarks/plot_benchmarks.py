@@ -8,9 +8,9 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 folder = "./figures"
 
 # Data
-task_to_name = {"arithmetic": "Math", "text2sql": "Text2SQL"}
+task_to_name = {"arithmetic": "Arithmetic", "text2sql": "Text2SQL", "math500": "Math500"}
 data: list[pd.DataFrame] = []
-for benchmark in ["arithmetic", "text2sql"]:
+for benchmark in task_to_name:
     with open(f"{current_dir}/{benchmark}/cleaned_result.json", "r") as f:
         json_results: dict = json.load(f)
     categories = list(json_results.keys())
@@ -44,6 +44,7 @@ plot_df["CategoryNum"] = plot_df["Category"].apply(
         "orchestra": 5,
         "employee_hire": 6,
         "battle_death": 7,
+        "50 qs": 8,
     }[x]
 )
 plot_df.sort_values(by=["Task", "CategoryNum"], inplace=True, ascending=[True, True])

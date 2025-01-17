@@ -1,0 +1,9 @@
+Overview:
+This was implemented with v0.6.0 of the library,
+leveraging a single 'anthropic.claude-3-sonnet-20240229-v1:0' model
+and multiple rounds of self-reflection on the answers
+
+Data:
+This was downloaded using the following link
+https://huggingface.co/datasets/HuggingFaceH4/MATH-500
+and contains a subset of 500 problems from the MATH benchmark that OpenAI created in their Let's Verify Step by Step paper.
