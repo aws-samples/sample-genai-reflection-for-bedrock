@@ -8,13 +8,6 @@ A configurable extension to Bedrock which enhances performance by enabling addit
 
 > See [task details](./examples/benchmarks/) and [expanded evaluation results](./EXPERIMENTS.md) for more information!
 
-## 🧪 Live Playground
-
-An live demo of the app is hosted on the `Hive` page at [http://demo-stl-908936741.us-east-1.elb.amazonaws.com](http://demo-stl-908936741.us-east-1.elb.amazonaws.com) where you can compare BedrockHive to a single Bedrock call on your task.
-
-* Username: letmeseeit
-* Password: Testtheapp123@
-
 ## 📦 Installation
 
 ### Local
