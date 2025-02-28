@@ -31,7 +31,7 @@ N_REPLICATES = 1
 Q = "What is the result of 674+492*613+485-623*429? Make sure to always state your final answer in <answer> </answer> tags."
 
 
-def profile_bedrock_hive(models, n_reflections, replicates=N_REPLICATES):
+def profile_hive(models, n_reflections, replicates=N_REPLICATES):
     durations = []
 
     for _ in range(replicates):
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         models = AVAILABLE_MODELS[:num_models]
         for n_reflections in [0, 1, 2, 3, 5]:  # number of reflections
             print(f"PROFILING {models=} AND {n_reflections=}\n")
-            results = profile_bedrock_hive(models, n_reflections)
+            results = profile_hive(models, n_reflections)
             all_results.append(results)
 
     # Convert results to DataFrame and save as JSON

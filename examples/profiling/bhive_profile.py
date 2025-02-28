@@ -19,7 +19,7 @@ BEDROCK_CONFIG = Config(region_name="us-east-1")
 client = Hive(client_config=BEDROCK_CONFIG)
 
 
-def profile_bedrock_hive(models, n_reflections, output_file) -> None:
+def profile_hive(models, n_reflections, output_file) -> None:
     pr = cProfile.Profile()
     pr.enable()
 
@@ -44,24 +44,24 @@ if __name__ == "__main__":
     if args.choice == 0:
         # Single model call with 0 reflections
         print("Profiling single model with 0 reflections")
-        profile_bedrock_hive([AVAILABLE_MODELS[0]], 0, output_file)
+        profile_hive([AVAILABLE_MODELS[0]], 0, output_file)
     elif args.choice == 1:
         # Single model call with 2 reflections
         print("Profiling single model with 2 reflections")
-        profile_bedrock_hive([AVAILABLE_MODELS[0]], 2, output_file)
+        profile_hive([AVAILABLE_MODELS[0]], 2, output_file)
     elif args.choice == 2:
         # Multi-model call with 0 reflections
         print("Profiling multiple models with 0 reflections")
-        profile_bedrock_hive(AVAILABLE_MODELS, 0, output_file)
+        profile_hive(AVAILABLE_MODELS, 0, output_file)
     elif args.choice == 3:
         # Multi-model call with 2 reflections
         print("Profiling multiple models with 2 reflections")
-        profile_bedrock_hive(AVAILABLE_MODELS, 2, output_file)
+        profile_hive(AVAILABLE_MODELS, 2, output_file)
     elif args.choice == 4:
         print("Profiling same model twice with 0 reflections")
-        profile_bedrock_hive([AVAILABLE_MODELS[0]] * 2, 0, output_file)
+        profile_hive([AVAILABLE_MODELS[0]] * 2, 0, output_file)
     elif args.choice == 5:
         print("Profiling same model twice with 2 reflections")
-        profile_bedrock_hive([AVAILABLE_MODELS[0]] * 2, 2, output_file)
+        profile_hive([AVAILABLE_MODELS[0]] * 2, 2, output_file)
     else:
         print("Invalid choice. Please provide an integer between 0 and 5 inclusive.")

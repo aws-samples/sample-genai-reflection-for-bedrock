@@ -1,6 +1,6 @@
 # 🐝 BedrockHive
 
-A configurable extension to Bedrock which enhances performance by enabling additional compute at test time. Using BedrockHive, we have seen significant performance gains over a single Bedrock call for mathematical arithmetic and Text2SQL capabilities.
+A configurable extension to Bedrock which enhances performance by enabling additional compute at inference time. Using BedrockHive, we have seen significant performance gains over a single Bedrock call for mathematical arithmetic and Text2SQL capabilities.
 
 <p align="center" width="100%">
     <img src="./examples/benchmarks/result.png"/>
