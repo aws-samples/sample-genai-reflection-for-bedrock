@@ -1,6 +1,6 @@
-# 🐝 BedrockHive
+# 🐝 Beehive
 
-A configurable extension to Bedrock which enhances performance by enabling additional compute at inference time. Using BedrockHive, we have seen significant performance gains over a single Bedrock call for mathematical arithmetic and Text2SQL capabilities.
+A configurable extension to Bedrock which enhances performance by enabling additional compute at inference time. Using Beehive, we have seen significant performance gains over a single Bedrock call for mathematical arithmetic and Text2SQL capabilities.
 
 <p align="center" width="100%">
     <img src="./examples/benchmarks/result.png"/>
@@ -18,23 +18,23 @@ When working on your local machine or virtual machine with ability to create a `
 
 * Then install the library:
     ```bash
-    pip install bedrock_hive
+    pip install bee_hive
     ```
 
 ### Client
 
 If you find yourself working within a client account and do not have access to your usual pip configuration, the ability to install remote packages, or your GitLab credentials, you can still install Python packages directly from a source wheel file.
 
-* Download the latest `.whl` file from [the package registry](https://gitlab.aws.dev/genaiic-reusable-assets/utilities/bedrock_hive/-/packages) e.g. `bedrock_hive-<version>-py3-none-any.whl`
+* Download the latest `.whl` file from [the package registry](https://gitlab.aws.dev/genaiic-reusable-assets/utilities/bee_hive/-/packages) e.g. `bee_hive-<version>-py3-none-any.whl`
 
 * Then install the library:
     ```bash
-    pip install bedrock_hive-<version>-py3-none-any.whl
+    pip install bee_hive-<version>-py3-none-any.whl
     ```
 
 ## 💬 Usage
 
-There are a variety of ways to leverage BedrockHive in your project:
+There are a variety of ways to leverage Beehive in your project:
 
 ### 1) Using a Single Model
 
@@ -219,7 +219,7 @@ You can also apply the verifier from the previous stage in this inference method
 
 ### 4) Optimisation
 
-If you are not sure which exact hyperparameter configuration will suit your needs, you can use the BedrockHive hyperparameter optimisation functionality. Here, you can define a set of ranges for the inference parameters such as the Bedrock models or rounds of reflection and these will be evaluated for against a test dataset. You can also specify a budget constraining the maximum cost ($) and maximum latency (seconds) per example.
+If you are not sure which exact hyperparameter configuration will suit your needs, you can use the Beehive hyperparameter optimisation functionality. Here, you can define a set of ranges for the inference parameters such as the Bedrock models or rounds of reflection and these will be evaluated for against a test dataset. You can also specify a budget constraining the maximum cost ($) and maximum latency (seconds) per example.
 
 ```mermaid
 graph LR
