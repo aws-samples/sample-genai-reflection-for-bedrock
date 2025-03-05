@@ -1,4 +1,4 @@
-## Experimnental Results with Beehive
+## Experimnental Results
 
 The tradeoff between accuracy, latency, and cost is crucial for selecting an inference strategy. Each task or problem domain is likely to have a unique profile, but we can use this math benchmark as a rough guideline as shown below.
 
@@ -10,7 +10,7 @@ The tradeoff between accuracy, latency, and cost is crucial for selecting an inf
     <img src="./examples/benchmarks/arithmetic/latency_vs_cost_performance.png"/>
 </p>
 
-The hyperparameter optimisation functionality in Beehive allows you to search the space of possible inference options and understand this tradeoff profile for your problem. This helped us discover that, on the Arithmetic (Medium) task, Claude 3 Haiku outperforms Claude 3 Sonnet when both use 3 rounds of self-reflection.
+The hyperparameter optimisation functionality allows you to search the space of possible inference options and understand this tradeoff profile for your problem. This helped us discover that, on the Arithmetic (Medium) task, Claude 3 Haiku outperforms Claude 3 Sonnet when both use 3 rounds of self-reflection.
 
 > This allows us to save over 10x on cost and 3x on latency per request!
 

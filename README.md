@@ -1,6 +1,6 @@
-# 🐝 Beehive
+# 🐝 GenAI Reflection for Bedrock
 
-A configurable extension to Bedrock which enhances performance by enabling additional compute at inference time. Using Beehive, we have seen significant performance gains over a single Bedrock call for mathematical arithmetic and Text2SQL capabilities.
+A configurable extension to Bedrock which enhances performance by enabling additional compute at inference time, allowing you to tradeoff the cost, accuracy and latency of a Bedrock solution. We have seen significant performance gains over a single Bedrock call for a wide range of domains using these techniques as shown below:
 
 <p align="center" width="100%">
     <img src="./examples/benchmarks/result.png"/>
@@ -34,7 +34,7 @@ If you find yourself working within a client account and do not have access to y
 
 ## 💬 Usage
 
-There are a variety of ways to leverage Beehive in your project:
+There are a variety of ways to leverage this in your project:
 
 ### 1) Using a Single Model
 
@@ -219,7 +219,7 @@ You can also apply the verifier from the previous stage in this inference method
 
 ### 4) Optimisation
 
-If you are not sure which exact hyperparameter configuration will suit your needs, you can use the Beehive hyperparameter optimisation functionality. Here, you can define a set of ranges for the inference parameters such as the Bedrock models or rounds of reflection and these will be evaluated for against a test dataset. You can also specify a budget constraining the maximum cost ($) and maximum latency (seconds) per example.
+If you are not sure which exact hyperparameter configuration will suit your needs, you can use the hyperparameter optimisation functionality. Here, you can define a set of ranges for the inference parameters such as the Bedrock models or rounds of reflection and these will be evaluated for against a test dataset. You can also specify a budget constraining the maximum cost ($) and maximum latency (seconds) per example.
 
 ```mermaid
 graph LR
