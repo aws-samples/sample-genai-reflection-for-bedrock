@@ -18,6 +18,7 @@ wheels/
 # Static files
 *.prof
 examples/profiling/*.png
+*.jsonl
 
 # Other
 *.DS_Store

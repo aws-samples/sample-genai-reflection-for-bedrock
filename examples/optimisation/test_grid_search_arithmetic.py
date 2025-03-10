@@ -1,3 +1,8 @@
+"""
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+"""
+
 import os
 import pandas as pd
 import numpy as np
@@ -44,4 +49,4 @@ for result in results.individual_results:
     result_data["Score"].append(result.score * 100)
 
 df = pd.DataFrame(result_data)
-df.to_csv(current_dir + "/grid_search.csv", index=False)
+df.to_csv(current_dir + "/new_grid_search_arithmetic.csv", index=False)
