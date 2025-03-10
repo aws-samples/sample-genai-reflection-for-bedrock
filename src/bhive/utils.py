@@ -8,6 +8,9 @@ from typing import Callable
 
 from bhive import logger
 from bhive.chat import ModelChatLog
+import boto3
+
+_RUNTIME_CLIENT_NAME = "bedrock-runtime"
 
 
 def parse_bedrock_output(response: dict) -> str:
@@ -34,3 +37,11 @@ def parallel_bedrock_exec(func: Callable, chathistory: list[ModelChatLog]) -> di
             except Exception as exc:
                 raise exc
     return outputs
+
+
+def create_bedrock_client(client_config: dict | None = None):
+    logger.info(f"Creating Bedrock client from environment with {client_config=}.")
+    return boto3.client(
+        service_name=_RUNTIME_CLIENT_NAME,
+        config=client_config,
+    )

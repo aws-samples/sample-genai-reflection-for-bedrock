@@ -1,6 +1,6 @@
 import pytest
 from botocore.config import Config
-from bhive import client, config
+from bhive import client, config, utils
 
 
 @pytest.fixture
@@ -54,7 +54,8 @@ def should_instantiate_using_client_config(
     mock_boto_client.return_value = mock_runtime_client
     hive = client.Hive(client_config=example_boto_config)
     mock_boto_client.assert_called_once_with(
-        service_name=client._RUNTIME_CLIENT_NAME, config=example_boto_config
+        service_name=utils._RUNTIME_CLIENT_NAME,
+        config=example_boto_config,
     )
     assert hive.runtime_client == mock_runtime_client
 

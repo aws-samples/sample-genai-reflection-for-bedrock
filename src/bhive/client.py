@@ -6,14 +6,11 @@ SPDX-License-Identifier: Apache-2.0
 import functools
 from typing import Callable
 
-import boto3
 from botocore.config import Config
 
 from bhive import chat, config, cost, inference, logger
 from bhive.evaluators import BudgetConfig, GridResults, TrialResult, answer_in_text
-from bhive.utils import parse_bedrock_output
-
-_RUNTIME_CLIENT_NAME = "bedrock-runtime"
+from bhive.utils import parse_bedrock_output, create_bedrock_client
 
 
 class Hive:
@@ -55,16 +52,13 @@ class Hive:
         if client and client_config:
             raise ValueError("Only one of client or client_config should be provided.")
         if client_config:
-            self.runtime_client = boto3.client(
-                service_name=_RUNTIME_CLIENT_NAME, config=client_config
-            )
+            self.runtime_client = create_bedrock_client(client_config)
         elif client:
             if not hasattr(client, "converse"):
                 raise ValueError("Provided client does not have a 'converse' method.")
             self.runtime_client = client
         else:
-            logger.warning("No client or client_config provided. Attempting to create a client.")
-            self.runtime_client = boto3.client(service_name=_RUNTIME_CLIENT_NAME)
+            self.runtime_client = create_bedrock_client()
 
     def converse(
         self, messages: list[dict], config: config.HiveConfig, **converse_kwargs
