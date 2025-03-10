@@ -176,7 +176,12 @@ class Hive:
         configs = trial_config._all_configuration_options()
         logger.info(f"Optimising over {len(configs)} configurations")
         results = GridResults()
-        cost_dict = budget_config.cost_dictionary if budget_config else cost.MODELID_COSTS_PER_TOKEN
+        if budget_config:
+            cost_dict = budget_config.cost_dictionary
+        else:
+            logger.warning("Using built-in cost dictionary, which may be out of date")
+            cost_dict = cost.MODELID_COSTS_PER_TOKEN
+
         for _config in configs:
             # TODO implement smarter stateful pruning of configs
             ## e.g. if a model is too expensive at 1 round of reflection, exclude anymore
