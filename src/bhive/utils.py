@@ -17,8 +17,10 @@ def parse_bedrock_output(response: dict) -> str:
     replies = response["output"]["message"]["content"]
     logger.debug(f"Request output:\n{response['output']=}")
     logger.debug(f"Request statistics:\n{response['usage']}\n{response['metrics']}")
-    if not len(replies) == 1:
-        raise ValueError("Model has returned multiple or no content blocks in this response.")
+    if 1 < len(replies):
+        replies = [reply for reply in replies if "text" in reply]  # handle claude 3.7
+        if len(replies) != 1:
+            raise ValueError(f"Model has returned {len(replies)} text blocks in the response.")
     return replies[0]["text"]
 
 
