@@ -28,11 +28,10 @@ for i, label in enumerate(df["Config"]):
         ha="center",
         fontsize=9,
     )
-plt.xscale("log")
 plt.colorbar(scatter, label="Accuracy", format=lambda x, pos: "{:.0f}%".format(x))
 plt.xlabel("Cost ($) / sample")
 plt.ylabel("Latency (seconds) / sample")
-plt.title("Performance of <Model - # Reflections>")
+plt.title("Performance of <Model (# Reflections)>")
 
 plt.tight_layout()
 plt.savefig(current_dir + "/scatter_grid_search.png", dpi=500)

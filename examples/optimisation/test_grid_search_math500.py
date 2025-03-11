@@ -20,17 +20,29 @@ with open(math500_path, "r") as f:
     parsed_raw_data: list[dict[str, str]] = [eval(line) for line in raw_data]
 random.shuffle(parsed_raw_data)
 
-test_dataset = []
-for i in range(n_samples):
-    sample = parsed_raw_data[i]
-    problem, answer = sample["problem"], sample["answer"]
-    question = f"""
-    What is the answer to the following math problem:
-    {problem}
+if not os.path.exists(current_dir + "/math500_subset.jsonl"):
+    print("Creating subset of math500 dataset...")
+    dataset_subset = []
+    for i in range(n_samples):
+        sample = parsed_raw_data[i]
+        problem, answer = sample["problem"], sample["answer"]
+        question = f"""
+        What is the answer to the following math problem:
+        {problem}
 
-    Make sure to always state your final answer in <answer> </answer> tags.
-    """
-    test_dataset.append((question, answer))
+        Make sure to always state your final answer in <answer> </answer> tags.
+        """
+        dataset_subset.append({"q": question, "a": answer})
+
+    # Save subset
+    with open(current_dir + "/math500_subset.jsonl", "w") as f:
+        for sample in dataset_subset:
+            f.write(str(sample) + "\n")
+
+# Load subset into list[tuple]
+with open(current_dir + "/math500_subset.jsonl", "r") as f:
+    test_dataset = [eval(line) for line in f.readlines()]
+    test_dataset = [(s["q"], s["a"]) for s in test_dataset]
 
 
 def math_in_tags(expected_answer: str, response: str):
