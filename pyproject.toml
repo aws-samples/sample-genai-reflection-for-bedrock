@@ -1,14 +1,14 @@
 [project]
 name = "bee_hive"
-version = "0.6.1"
+version = "0.6.2"
 description = "Library for enabling inference-time-compute augmentations in Bedrock"
 authors = [
     {name = "Jack Butler", email = "jackbtlr@amazon.com"},
 ]
 license = { text = "Amazon Software License" }
 dependencies = [
-    "boto3>=1.34.51,<1.36.0",
-    "botocore>=1.34.1,<1.36.0",
+    "boto3>=1.37.10,<1.38.0",
+    "botocore>=1.37.10,<1.38.0",
     "loguru>=0.7.2",
     "pydantic>=2.9.2",
     "pylatexenc>=2.10",

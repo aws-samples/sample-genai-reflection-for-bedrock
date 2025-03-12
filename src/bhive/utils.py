@@ -6,9 +6,10 @@ SPDX-License-Identifier: Apache-2.0
 import concurrent.futures
 from typing import Callable
 
+import boto3
+
 from bhive import logger
 from bhive.chat import ModelChatLog
-import boto3
 
 _RUNTIME_CLIENT_NAME = "bedrock-runtime"
 

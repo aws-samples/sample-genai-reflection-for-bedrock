@@ -59,6 +59,10 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
         input_per_1000=0.003,
         output_per_1000=0.015,
     ),
+    "deepseek.r1-v1:0": TokenPrices(
+        input_per_1000=0.00135,
+        output_per_1000=0.0054,
+    ),
     "meta.llama3-3-70b-instruct-v1:0": TokenPrices(
         input_per_1000=0.00072,
         output_per_1000=0.00072,
