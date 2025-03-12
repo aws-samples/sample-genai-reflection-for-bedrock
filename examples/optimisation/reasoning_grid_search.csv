@@ -1,0 +1,9 @@
+Config,Cost,Latency,Score
+Haiku 3.5 - 0 reflection,0.0017458,7.6051,50.0
+Haiku 3.5 - 1 reflection,0.00358796,14.0986,60.0
+Sonnet 3.5 v2 - 0 reflection,0.006592499999999999,9.8901,65.0
+Sonnet 3.5 v2 - 1 reflection,0.0149673,19.6321,75.0
+Claude 3.7 - 0 reflection,0.01044375,16.47685,65.0
+Claude 3.7 - 1k reasoning,0.018996,28.2104,70.0
+Claude 3.7 - 3k reasoning,0.029360526315789472,43.65468421052631,80.0
+Claude 3.7 - 1 reflection,0.02491935,35.2037,80.0
