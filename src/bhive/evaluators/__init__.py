@@ -4,14 +4,12 @@ SPDX-License-Identifier: Apache-2.0
 """
 
 from .string import answer_in_tags, answer_in_text, answers_equal
-from .math import answer_math_equal
 from .budget import BudgetConfig, GridResults, TrialResult
 
 __all__ = [
     "answer_in_tags",
     "answer_in_text",
     "answers_equal",
-    "answer_math_equal",
     "BudgetConfig",
     "GridResults",
     "TrialResult",
