@@ -9,7 +9,7 @@ import os
 import pandas as pd
 import random
 from bhive import TrialConfig, Hive
-from bhive.evaluators import answer_math_equal
+from .math import answer_math_equal
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 n_samples = 20
