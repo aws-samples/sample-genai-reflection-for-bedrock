@@ -1,6 +1,6 @@
 [project]
 name = "bee_hive"
-version = "0.6.2"
+version = "0.6.3"
 description = "Library for enabling inference-time-compute augmentations in Bedrock"
 authors = [
     {name = "Jack Butler", email = "jackbtlr@amazon.com"},
@@ -11,8 +11,6 @@ dependencies = [
     "botocore>=1.37.10,<1.38.0",
     "loguru>=0.7.2",
     "pydantic>=2.9.2",
-    "pylatexenc>=2.10",
-    "sympy>=1.13.3",
 ]
 requires-python = ">=3.10"
 
@@ -33,8 +31,8 @@ dev-dependencies = [
     "python-dotenv>=1.0.1",
     "seaborn>=0.13.2",
     "snakeviz>=2.2.0",
-    "streamlit>=1.39.0",
-    "watchdog>=5.0.3",
+    "sympy>=1.13.3",
+    "pylatexenc>=2.10",
 ]
 
 [tool.ruff]
