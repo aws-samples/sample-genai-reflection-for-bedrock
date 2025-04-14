@@ -83,6 +83,7 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
         input_per_1000=0.0001,
         output_per_1000=0.0001,
     ),
+    "mistral.pixtral-large-2502-v1:0": TokenPrices(input_per_1000=0.002, output_per_1000=0.006),
     "mistral.mistral-small-2402-v1:0": TokenPrices(input_per_1000=0.001, output_per_1000=0.003),
     "mistral.mistral-large-2402-v1:0": TokenPrices(
         input_per_1000=0.004,
