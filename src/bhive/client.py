@@ -10,7 +10,7 @@ from botocore.config import Config
 
 from bhive import chat, config, cost, inference, logger
 from bhive.evaluators import BudgetConfig, GridResults, TrialResult, answer_in_text
-from bhive.utils import parse_bedrock_output, create_bedrock_client
+from bhive.utils import create_bedrock_client, parse_bedrock_output
 
 
 class Hive:
@@ -215,7 +215,7 @@ class Hive:
         **converse_kwargs,
     ) -> TrialResult:
         """Objective function to optimize the inference method."""
-        correct_responses = 0
+        cumulative_eval_score = 0
         costs = []
         latencies = []
         for message, expected_response in dataset:
@@ -227,13 +227,14 @@ class Hive:
                 latencies.append(cost.average_latency(output.metrics))
                 if not isinstance(answer, str):
                     raise TypeError("Optimisation must be performed with single responses.")
-                if evaluator(expected_response, answer):
-                    correct_responses += 1
+                eval_score = evaluator(expected_response, answer)
+                if eval_score:
+                    cumulative_eval_score += eval_score
             except Exception as e:
                 logger.error(f"Error during sample inference: {e}")
                 continue
         return TrialResult(
-            score=correct_responses / len(dataset),
+            score=cumulative_eval_score / len(dataset),
             config=hive_config,
             avg_latency_seconds=sum(latencies) / len(latencies),
             avg_cost_dollars=sum(costs) / len(costs),
