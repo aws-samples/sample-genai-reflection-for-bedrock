@@ -24,6 +24,8 @@ class HiveOutput(pydantic.BaseModel):
     usage: dict[str, ConverseUsage]
     metrics: dict[str, ConverseMetrics]
     cost: TotalCost
+    stopReason: str
+    trace: dict[str, dict]
 
 
 class ModelChatLog(pydantic.BaseModel):
