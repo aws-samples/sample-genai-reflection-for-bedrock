@@ -37,6 +37,9 @@ def single_model_single_call(
     )
     chatlog.add_assistant_msg(response.answer, 0)
     chatlog.update_stats(modelid, response)
+    chatlog.add_stop_reason(response.stopReason)
+    chatlog.add_trace(response.trace)
+
     return response.answer, chatlog
 
 
@@ -50,6 +53,8 @@ def multi_model_single_call(
     for (index, modelid), response in responses.items():
         chatlog.add_assistant_msg(response.answer, index)
         chatlog.update_stats(modelid, response)
+        chatlog.add_stop_reason(response.stopReason)
+        chatlog.add_trace(response.trace)
 
     if config.aggregator_model_id:
         # aggregate an answer
@@ -77,6 +82,9 @@ def single_model_multi_call(
         )
         chatlog.add_assistant_msg(response.answer, invoke_index=0)
         chatlog.update_stats(modelid, response)
+        chatlog.add_stop_reason(response.stopReason)
+        chatlog.add_trace(response.trace)
+
     return response.answer, chatlog
 
 
@@ -109,6 +117,8 @@ def multi_model_multi_call(
         for (index, modelid), response in responses.items():
             chatlog.add_assistant_msg(response.answer, index)
             chatlog.update_stats(modelid, response)
+            chatlog.add_stop_reason(response.stopReason)
+            chatlog.add_trace(response.trace)
 
     if config.aggregator_model_id:
         # aggregate an answer

@@ -137,7 +137,11 @@ class Hive:
             converse_response = chat.ConverseResponse(answer="Failed to provide a response.")
         answer = parse_bedrock_output(response)
         converse_response = chat.ConverseResponse(
-            answer=answer, usage=response["usage"], metrics=response["metrics"]
+            answer=answer,
+            usage=response["usage"],
+            metrics=response["metrics"],
+            stopReason=response["stopReason"],
+            trace=response["trace"],
         )
         logger.debug(f"Received answer from {model_id}:\n{answer}")
         return converse_response
