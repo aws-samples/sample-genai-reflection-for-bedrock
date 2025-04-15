@@ -112,6 +112,8 @@ class Hive:
             chat_history=chatlog.history,
             usage=chatlog.usage,
             metrics=chatlog.metrics,
+            stopReason=chatlog.stopReason,
+            trace=chatlog.trace,
             cost=cost.TotalCost(value=cost.calculate_cost(chatlog.usage)),
         )
 
