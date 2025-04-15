@@ -1,9 +1,10 @@
 [project]
 name = "bee_hive"
-version = "0.6.4"
+version = "0.6.5"
 description = "Library for enabling inference-time-compute augmentations in Bedrock"
 authors = [
-    {name = "Jack Butler", email = "jackbtlr@amazon.com"},
+    {name = "Jack Butler", email = "jackbtlr@amazon.co.uk"},
+    {name = "Nikita Kozodoi", email = "kozodoi@amazon.de"},
 ]
 license = { text = "Amazon Software License" }
 dependencies = [

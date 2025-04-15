@@ -14,6 +14,8 @@ class ConverseResponse(pydantic.BaseModel):
     answer: str
     usage: ConverseUsage
     metrics: ConverseMetrics
+    stopReason: str
+    trace: dict[str, dict]
 
 
 class HiveOutput(pydantic.BaseModel):
@@ -22,6 +24,8 @@ class HiveOutput(pydantic.BaseModel):
     usage: dict[str, ConverseUsage]
     metrics: dict[str, ConverseMetrics]
     cost: TotalCost
+    stopReason: str
+    trace: dict[str, dict]
 
 
 class ModelChatLog(pydantic.BaseModel):
@@ -52,6 +56,14 @@ class ChatLog:
 
     def add_user_msg(self, message: str, invoke_index: int):
         self._add_msg(message, self._USER, invoke_index)
+
+    def add_trace(self, trace: dict[str, dict]):
+        # add converse trace of the last call
+        self.trace = trace
+
+    def add_stop_reason(self, stop_reason: str):
+        # add stopReason of the last call
+        self.stopReason = stop_reason
 
     def _add_msg(self, message: str, role: str, invoke_index: int):
         fmt_message = self._wrap_converse_msg(message, role)

@@ -1,6 +1,6 @@
 import pytest
-from botocore.config import Config
 from bhive import client, config, utils
+from botocore.config import Config
 
 
 @pytest.fixture
@@ -24,6 +24,8 @@ def response_factory():
             "output": {"message": message},
             "usage": usage,
             "metrics": {"latencyMs": latency_ms},
+            "trace": {},
+            "stopReason": "end_turn",
         }
 
     return _create_response

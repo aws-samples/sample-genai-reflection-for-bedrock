@@ -112,6 +112,8 @@ class Hive:
             chat_history=chatlog.history,
             usage=chatlog.usage,
             metrics=chatlog.metrics,
+            stopReason=chatlog.stopReason,
+            trace=chatlog.trace,
             cost=cost.TotalCost(value=cost.calculate_cost(chatlog.usage)),
         )
 
@@ -135,7 +137,11 @@ class Hive:
             converse_response = chat.ConverseResponse(answer="Failed to provide a response.")
         answer = parse_bedrock_output(response)
         converse_response = chat.ConverseResponse(
-            answer=answer, usage=response["usage"], metrics=response["metrics"]
+            answer=answer,
+            usage=response["usage"],
+            metrics=response["metrics"],
+            stopReason=response["stopReason"],
+            trace=response.get("trace", {}),
         )
         logger.debug(f"Received answer from {model_id}:\n{answer}")
         return converse_response
