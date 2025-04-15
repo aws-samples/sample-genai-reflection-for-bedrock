@@ -141,7 +141,7 @@ class Hive:
             usage=response["usage"],
             metrics=response["metrics"],
             stopReason=response["stopReason"],
-            trace=response["trace"],
+            trace=response.get("trace", {}),
         )
         logger.debug(f"Received answer from {model_id}:\n{answer}")
         return converse_response
