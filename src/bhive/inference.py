@@ -110,7 +110,9 @@ def multi_model_multi_call(
                 logger.debug(f"Sending request to {model_log.modelid}:\n{debate_msg}")
                 chatlog.add_user_msg(debate_msg, index)
 
-        logger.info(f"Fetching debate #{n_reflect+1} answers from all {config.bedrock_model_ids=}")
+        logger.info(
+            f"Fetching debate #{n_reflect + 1} answers from all {config.bedrock_model_ids=}"
+        )
         responses: dict[tuple[int, str], chat.ConverseResponse] = parallel_bedrock_exec(
             _converse_func, chathistory=chatlog.history
         )
