@@ -29,3 +29,10 @@ repos:
     rev: v1.15.0
     hooks:
       - id: mypy
+
+  - repo: https://github.com/awslabs/automated-security-helper.git
+    rev: v2.0.1
+    hooks:
+    - id: ash
+      name: scan files using ash
+      stages: [ manual ]
