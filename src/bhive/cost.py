@@ -19,6 +19,10 @@ class TokenPrices(pydantic.BaseModel):
 
 
 MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
+    "amazon.nova-premier-v1:0": TokenPrices(
+        input_per_1000=0.0025,
+        output_per_1000=0.0125,
+    ),
     "amazon.nova-pro-v1:0": TokenPrices(
         input_per_1000=0.0008,
         output_per_1000=0.0032,
@@ -63,6 +67,14 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
         input_per_1000=0.00135,
         output_per_1000=0.0054,
     ),
+    "meta.llama4-maverick-17b-instruct-v1:0": TokenPrices(
+        input_per_1000=0.00024,
+        output_per_1000=0.00097,
+    ),
+    "meta.llama4-scout-17b-instruct-v1:0": TokenPrices(
+        input_per_1000=0.00017,
+        output_per_1000=0.00066,
+    ),
     "meta.llama3-3-70b-instruct-v1:0": TokenPrices(
         input_per_1000=0.00072,
         output_per_1000=0.00072,
@@ -97,6 +109,8 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
         input_per_1000=0.00045,
         output_per_1000=0.0007,
     ),
+    "writer.palmyra-x4-v1:0": TokenPrices(input_per_1000=0.0025, output_per_1000=0.010),
+    "writer.palmyra-x5-v1:0": TokenPrices(input_per_1000=0.0006, output_per_1000=0.006),
 }
 
 
