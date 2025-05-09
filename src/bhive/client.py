@@ -78,7 +78,10 @@ class Hive:
         Returns:
             chat.HiveOutput: A response object containing the answer (or answers if not aggregated) and the full chat history.
         """
-        chatlog = chat.ChatLog(config.bedrock_model_ids, messages)
+        _all_models = config.bedrock_model_ids
+        if config.aggregator_model_id:
+            _all_models += [config.aggregator_model_id]
+        chatlog = chat.ChatLog(_all_models, messages)
         logger.info(f"Starting inference with {config=} and {converse_kwargs=}")
         message = messages[0].get("content", [{}])[0].get("text")
 
