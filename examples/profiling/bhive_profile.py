@@ -20,7 +20,9 @@ BEDROCK_CONFIG = Config(region_name="us-east-1")
 client = Hive(client_config=BEDROCK_CONFIG)
 
 
-def profile_hive(models, n_reflections, output_file, aggregator=None) -> None:
+def profile_hive(
+    models, n_reflections, output_file, aggregator=None, use_prompt_caching=True
+) -> None:
     pr = cProfile.Profile()
     pr.enable()
 
@@ -32,6 +34,7 @@ def profile_hive(models, n_reflections, output_file, aggregator=None) -> None:
 
     print("OUTPUT:")
     print(_out.response)
+    print()
     for m, u in _out.usage.items():
         print(f"{m}: {u} {_out.metrics[m]}")
     print()
@@ -40,6 +43,7 @@ def profile_hive(models, n_reflections, output_file, aggregator=None) -> None:
     pr.dump_stats(output_file)
 
     print(f"Profiling results saved to {output_file}. Use SnakeViz to visualize.")
+    print()
 
 
 if __name__ == "__main__":
@@ -48,7 +52,7 @@ if __name__ == "__main__":
     args = config.parse_args()
 
     output_file = f"{dir_path}/profiling_results.prof"  # Specify the output file for SnakeViz
-    choices = [0, 1, 2, 3, 4, 5, 6] if args.choice is None else [int(args.choice)]
+    choices = list(range(0, 8)) if args.choice is None else [int(args.choice)]
 
     for choice in choices:
         if choice == 0:
@@ -77,5 +81,9 @@ if __name__ == "__main__":
             print("Profiling multi-model twice with 2 reflections and aggregator")
             profile_hive(AVAILABLE_MODELS, 0, output_file, aggregator=AGGREGATOR)
             profile_hive(AVAILABLE_MODELS, 0, output_file, aggregator=AVAILABLE_MODELS[0])
+        elif choice == 7:
+            print("Profiling single model with 2 reflections and use_prompt_caching")
+            profile_hive([AVAILABLE_MODELS[0]], 2, output_file, use_prompt_caching=False)
+            profile_hive([AVAILABLE_MODELS[0]], 2, output_file, use_prompt_caching=True)
         else:
             print("Invalid choice. Please provide an integer between 0 and 5 inclusive.")
