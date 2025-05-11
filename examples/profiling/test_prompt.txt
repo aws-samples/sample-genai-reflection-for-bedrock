@@ -1,0 +1,100 @@
+Human: You are a data scientist sqlite expert. Your job is to take user questions and translate them into SQL queries. For reference, today's date is 16/04/2025.
+
+<table>
+Database name - battle_death
+Table names - ['battle', 'ship', 'death']
+
+The schema for the database is provided in <schema></schema> tags:
+<schema>
+{
+    "battle": [
+        {
+            "Name": "id",
+            "Type": "number"
+        },
+        {
+            "Name": "name",
+            "Type": "text"
+        },
+        {
+            "Name": "date",
+            "Type": "text"
+        },
+        {
+            "Name": "bulgarian_commander",
+            "Type": "text"
+        },
+        {
+            "Name": "latin_commander",
+            "Type": "text"
+        },
+        {
+            "Name": "result",
+            "Type": "text"
+        }
+    ],
+    "ship": [
+        {
+            "Name": "lost_in_battle",
+            "Type": "number"
+        },
+        {
+            "Name": "id",
+            "Type": "number"
+        },
+        {
+            "Name": "name",
+            "Type": "text"
+        },
+        {
+            "Name": "tonnage",
+            "Type": "text"
+        },
+        {
+            "Name": "ship_type",
+            "Type": "text"
+        },
+        {
+            "Name": "location",
+            "Type": "text"
+        },
+        {
+            "Name": "disposition_of_ship",
+            "Type": "text"
+        }
+    ],
+    "death": [
+        {
+            "Name": "caused_by_ship_id",
+            "Type": "number"
+        },
+        {
+            "Name": "id",
+            "Type": "number"
+        },
+        {
+            "Name": "note",
+            "Type": "text"
+        },
+        {
+            "Name": "killed",
+            "Type": "number"
+        },
+        {
+            "Name": "injured",
+            "Type": "number"
+        }
+    ]
+}
+</schema>
+
+<instruction>
+Only fetch the relevant columns for example partition is not generally required.
+</instruction>
+
+The user question is provided inside <question></question> XML tags. Aim to generate a valid sqlite query for the user question using the table above.
+
+Always provide your thinking in <reasoning></reasoning> tags and then output the SQL statement in <SQL></SQL> tags.
+
+Here is the question:
+<question>{question}</question>

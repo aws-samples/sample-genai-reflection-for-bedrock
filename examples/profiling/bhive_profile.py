@@ -13,11 +13,14 @@ dotenv.load_dotenv(dotenv_path)
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # Available models and configuration
-AVAILABLE_MODELS = ["anthropic.claude-3-sonnet-20240229-v1:0", "mistral.mistral-large-2402-v1:0"]
+AVAILABLE_MODELS = ["us.anthropic.claude-3-7-sonnet-20250219-v1:0", "amazon.nova-pro-v1:0"]
 AGGREGATOR = "us.anthropic.claude-3-7-sonnet-20250219-v1:0"
-BEDROCK_CONFIG = Config(region_name="us-east-1")
+BEDROCK_CONFIG = Config(region_name="us-west-2")
 
 client = Hive(client_config=BEDROCK_CONFIG)
+
+with open(f"{dir_path}/test_prompt.txt", "r") as f:
+    sample_question = f.read()
 
 
 def profile_hive(
@@ -27,9 +30,12 @@ def profile_hive(
     pr.enable()
 
     _config = HiveConfig(
-        bedrock_model_ids=models, num_reflections=n_reflections, aggregator_model_id=aggregator
+        bedrock_model_ids=models,
+        num_reflections=n_reflections,
+        aggregator_model_id=aggregator,
+        use_prompt_caching=use_prompt_caching,
     )
-    messages = [{"role": "user", "content": [{"text": "What is 2 + 2?"}]}]
+    messages = [{"role": "user", "content": [{"text": sample_question}]}]
     _out = client.converse(messages, _config)  # same simple question each time
 
     print("OUTPUT:")
