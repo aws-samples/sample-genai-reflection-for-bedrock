@@ -19,12 +19,14 @@ class HiveConfig(pydantic.BaseModel):
         num_reflections (int): The number of reflections to perform, must be zero or positive.
         aggregator_model_id (str | None): An optional aggregator model, to combine multiple model's responses.
         verifier (Callable[[str], str] | None): An optional callable for verifying thinking steps.
+        use_prompt_caching (bool): An optional flag to enable Bedrock prompt caching during reflection.
     """
 
     bedrock_model_ids: list[str]
     num_reflections: int = pydantic.Field(default=0, ge=0)
     aggregator_model_id: str | None = None
     verifier: Callable[[str], str] | None = None
+    use_prompt_caching: bool = False
 
     @pydantic.field_validator("bedrock_model_ids")
     @classmethod
@@ -71,6 +73,7 @@ class TrialConfig(pydantic.BaseModel):
     reflection_range: list[int] = pydantic.Field(default=[0])
     aggregator_model_ids: list[str | None] | None = pydantic.Field(default=[None])
     verifier_functions: list[Callable[[str], str] | None] | None = pydantic.Field(default=[None])
+    use_prompt_caching: bool = False
 
     def _all_configuration_options(self) -> list[HiveConfig]:
         """Captures all valid combinations for the grid search"""
@@ -87,6 +90,7 @@ class TrialConfig(pydantic.BaseModel):
                                 num_reflections=reflection_val,
                                 aggregator_model_id=aggregator,
                                 verifier=verifier,
+                                use_prompt_caching=self.use_prompt_caching,
                             )
                             config_params.append(_config)
                         except Exception as e:
