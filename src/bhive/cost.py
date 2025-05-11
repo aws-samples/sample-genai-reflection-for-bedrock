@@ -16,7 +16,7 @@ class TokenPrices(pydantic.BaseModel):
     input_per_1000: float = pydantic.Field(ge=0.0)
     output_per_1000: float = pydantic.Field(ge=0.0)
     currency: str = "USD"
-    cache_discount: float = pydantic.Field(ge=0.0, le=1.0, default=0.9)
+    cache_discount: float = pydantic.Field(ge=0.0, le=1.0, default=0.1)
 
 
 MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
