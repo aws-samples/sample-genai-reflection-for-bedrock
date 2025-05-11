@@ -81,7 +81,7 @@ class Hive:
         _all_models = config.bedrock_model_ids
         if config.aggregator_model_id:
             _all_models += [config.aggregator_model_id]
-        chatlog = chat.ChatLog(_all_models, messages)
+        chatlog = chat.ChatLog(_all_models, messages, config.use_prompt_caching)
         logger.info(f"Starting inference with {config=} and {converse_kwargs=}")
         message = messages[0].get("content", [{}])[0].get("text")
 

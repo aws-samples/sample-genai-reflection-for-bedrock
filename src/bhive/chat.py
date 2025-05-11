@@ -37,13 +37,16 @@ class ChatLog:
     _USER = "user"
     _ASSISTANT = "assistant"
 
-    def __init__(self, model_ids: list[str], messages: list[dict]) -> None:
+    def __init__(
+        self, model_ids: list[str], messages: list[dict], use_prompt_caching: bool = False
+    ) -> None:
         self.models = model_ids
         self.history: list[ModelChatLog] = [
             ModelChatLog(modelid=m, chat_history=copy.deepcopy(messages)) for m in self.models
         ]
         self.metrics = {m: ConverseMetrics() for m in model_ids}
         self.usage = {m: ConverseUsage(modelid=m) for m in model_ids}
+        self.use_prompt_caching = use_prompt_caching
 
     def update_stats(self, modelid: str, stats: ConverseResponse):
         # update usage
@@ -75,9 +78,11 @@ class ChatLog:
     def wrap_user_msg(self, message: str):
         return self._wrap_converse_msg(message, self._USER)
 
-    @staticmethod
-    def _wrap_converse_msg(message: str, role: str) -> dict[str, str | list[dict]]:
-        return {"role": role, "content": [{"text": message}]}
+    def _wrap_converse_msg(self, message: str, role: str) -> dict:
+        base_msg = {"role": role, "content": [{"text": message}]}
+        if self.use_prompt_caching:
+            base_msg["content"].append({"cachePoint": {"type": "default"}})  # type: ignore
+        return base_msg
 
     def get_recent_other_answers(self, invoke_index: int) -> list[dict]:
         other_model_answers = []
