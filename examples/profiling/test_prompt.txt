@@ -97,4 +97,4 @@ The user question is provided inside <question></question> XML tags. Aim to gene
 Always provide your thinking in <reasoning></reasoning> tags and then output the SQL statement in <SQL></SQL> tags.
 
 Here is the question:
-<question>{question}</question>
+<question>Find the most impactful battles by ship death, give detailed reasoning.</question>

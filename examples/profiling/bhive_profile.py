@@ -39,10 +39,9 @@ def profile_hive(
     _out = client.converse(messages, _config)  # same simple question each time
 
     print("OUTPUT:")
-    print(_out.response)
-    print()
     for m, u in _out.usage.items():
         print(f"{m}: {u} {_out.metrics[m]}")
+    print(_out.cost)
     print()
 
     pr.disable()
@@ -88,7 +87,7 @@ if __name__ == "__main__":
             profile_hive(AVAILABLE_MODELS, 0, output_file, aggregator=AGGREGATOR)
             profile_hive(AVAILABLE_MODELS, 0, output_file, aggregator=AVAILABLE_MODELS[0])
         elif choice == 7:
-            print("Profiling single model with 2 reflections and use_prompt_caching")
+            print("Profiling single model with 2 reflections and prompt caching")
             profile_hive([AVAILABLE_MODELS[0]], 2, output_file, use_prompt_caching=False)
             profile_hive([AVAILABLE_MODELS[0]], 2, output_file, use_prompt_caching=True)
         else:
