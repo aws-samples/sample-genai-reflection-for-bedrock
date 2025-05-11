@@ -16,6 +16,7 @@ class TokenPrices(pydantic.BaseModel):
     input_per_1000: float = pydantic.Field(ge=0.0)
     output_per_1000: float = pydantic.Field(ge=0.0)
     currency: str = "USD"
+    cache_discount: float = pydantic.Field(ge=0.0, le=1.0, default=0.9)
 
 
 MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
@@ -117,10 +118,7 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
 class ConverseUsage(pydantic.BaseModel):
     inputTokens: int = 0
     outputTokens: int = 0
-
-    @property
-    def totalTokens(self) -> int:
-        return self.inputTokens + self.outputTokens
+    cacheReadInputTokens: int = 0
 
 
 class ConverseMetrics(pydantic.BaseModel):
@@ -139,7 +137,12 @@ class TotalCost(pydantic.BaseModel):
 def calculate_model_cost(cost_per_token: TokenPrices, usage: ConverseUsage) -> float:
     input_price = cost_per_token.input_per_1000 * (usage.inputTokens / 1000)
     output_price = cost_per_token.output_per_1000 * (usage.outputTokens / 1000)
-    return input_price + output_price
+    cached_price = (
+        cost_per_token.input_per_1000
+        * cost_per_token.cache_discount
+        * (usage.cacheReadInputTokens / 1000)
+    )
+    return input_price + output_price + cached_price
 
 
 def calculate_cost(

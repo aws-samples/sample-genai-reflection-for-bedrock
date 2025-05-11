@@ -16,7 +16,6 @@ def response_factory():
         usage = {
             "inputTokens": input_tokens,
             "outputTokens": output_tokens,
-            "totalTokens": input_tokens + output_tokens,
         }
         response_status = {"HTTPStatusCode": 200}
         return {
@@ -109,7 +108,6 @@ def should_correctly_count_tokens(
     response = hive.converse(messages, _config)
     assert response.usage[model_id].inputTokens == input_tokens
     assert response.usage[model_id].outputTokens == output_tokens
-    assert response.usage[model_id].totalTokens == input_tokens + output_tokens
 
 
 @pytest.mark.parametrize("latency_ms", [120, 300])
