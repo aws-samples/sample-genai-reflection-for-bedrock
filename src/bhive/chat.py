@@ -53,6 +53,7 @@ class ChatLog:
         self.usage[modelid].inputTokens += stats.usage.inputTokens
         self.usage[modelid].outputTokens += stats.usage.outputTokens
         self.usage[modelid].cacheReadInputTokens += stats.usage.cacheReadInputTokens
+        self.usage[modelid].cacheWriteInputTokens += stats.usage.cacheWriteInputTokens
         self.metrics[modelid].latencyMs += stats.metrics.latencyMs
 
     def add_assistant_msg(self, message: str, invoke_index: int):

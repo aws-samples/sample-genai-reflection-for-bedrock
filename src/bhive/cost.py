@@ -119,6 +119,7 @@ class ConverseUsage(pydantic.BaseModel):
     inputTokens: int = 0
     outputTokens: int = 0
     cacheReadInputTokens: int = 0
+    cacheWriteInputTokens: int = 0
 
 
 class ConverseMetrics(pydantic.BaseModel):
@@ -135,7 +136,8 @@ class TotalCost(pydantic.BaseModel):
 
 
 def calculate_model_cost(cost_per_token: TokenPrices, usage: ConverseUsage) -> float:
-    input_price = cost_per_token.input_per_1000 * (usage.inputTokens / 1000)
+    all_input_tokens = usage.cacheWriteInputTokens + usage.inputTokens  # NOTE assumed
+    input_price = cost_per_token.input_per_1000 * (all_input_tokens / 1000)
     output_price = cost_per_token.output_per_1000 * (usage.outputTokens / 1000)
     cached_price = (
         cost_per_token.input_per_1000
