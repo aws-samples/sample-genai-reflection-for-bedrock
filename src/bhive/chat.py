@@ -9,6 +9,8 @@ import pydantic
 
 from bhive.cost import ConverseMetrics, ConverseUsage, TotalCost
 
+DEFAULT_CACHING = {"cachePoint": {"type": "default"}}
+
 
 class ConverseResponse(pydantic.BaseModel):
     answer: str
@@ -41,12 +43,16 @@ class ChatLog:
         self, model_ids: list[str], messages: list[dict], use_prompt_caching: bool = False
     ) -> None:
         self.models = model_ids
+        if use_prompt_caching:
+            messages[-1]["content"].append(DEFAULT_CACHING)  # cache initial prompt
         self.history: list[ModelChatLog] = [
             ModelChatLog(modelid=m, chat_history=copy.deepcopy(messages)) for m in self.models
         ]
         self.metrics = {m: ConverseMetrics() for m in model_ids}
         self.usage = {m: ConverseUsage(modelid=m) for m in model_ids}
         self.use_prompt_caching = use_prompt_caching
+        self.max_checkpoints = 4
+        self.n_cache_checkpoints = 1
 
     def update_stats(self, modelid: str, stats: ConverseResponse):
         # update usage
@@ -82,8 +88,15 @@ class ChatLog:
 
     def _wrap_converse_msg(self, message: str, role: str) -> dict:
         base_msg = {"role": role, "content": [{"text": message}]}
-        if self.use_prompt_caching:
-            base_msg["content"].append({"cachePoint": {"type": "default"}})  # type: ignore
+        if (
+            self.use_prompt_caching
+            and self.n_cache_checkpoints < self.max_checkpoints
+            and role == self._USER
+        ):
+            # add cached checkpoint
+            ## caching after user message is more efficient
+            base_msg["content"].append(DEFAULT_CACHING)  # type: ignore
+            self.n_cache_checkpoints += 1
         return base_msg
 
     def get_recent_other_answers(self, invoke_index: int) -> list[dict]:
