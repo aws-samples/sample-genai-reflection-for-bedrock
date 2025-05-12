@@ -66,6 +66,11 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
 means_nc_lat, p25_nc_lat, p75_nc_lat = get_stats(latency_no_cache)
 means_c_lat, p25_c_lat, p75_c_lat = get_stats(latency_cache)
 
+shared_mean_r0 = (
+    means_c_lat[0] + means_nc_lat[0]
+) / 2  # reduce noise that comes from output tokens
+means_c_lat[0] = means_nc_lat[0] = shared_mean_r0
+
 ax1.plot(reflections, means_nc_lat, "b-", label="Without Cache")
 ax1.fill_between(reflections, p25_nc_lat, p75_nc_lat, alpha=0.2, color="b")
 ax1.plot(reflections, means_c_lat, "r-", label="With Cache")
@@ -82,6 +87,11 @@ ax1.grid(True)
 means_nc_cost, p25_nc_cost, p75_nc_cost = get_stats(cost_no_cache)
 means_c_cost, p25_c_cost, p75_c_cost = get_stats(cost_cache)
 
+shared_mean_r0 = (
+    means_nc_cost[0] + means_c_cost[0]
+) / 2  # reduce noise that comes from output tokens
+means_c_cost[0] = means_nc_cost[0] = shared_mean_r0
+
 ax2.plot(reflections, means_nc_cost, "b-", label="Without Cache")
 ax2.fill_between(reflections, p25_nc_cost, p75_nc_cost, alpha=0.2, color="b")
 ax2.plot(reflections, means_c_cost, "r-", label="With Cache")
@@ -95,8 +105,8 @@ for i, reduction in enumerate(cost_reductions):
     y_pos = (means_nc_cost[i] + means_c_cost[i]) / 2
     ax2.annotate(
         f"-{reduction:.1f}%",
-        xy=(i, y_pos),
-        xytext=(10, 0),
+        xy=(i - 0.25, y_pos - y_pos * 0.1),
+        xytext=(0, 0),
         textcoords="offset points",
         ha="left",
         va="center",
