@@ -9,6 +9,8 @@ import pydantic
 
 from bhive.cost import ConverseMetrics, ConverseUsage, TotalCost
 
+DEFAULT_CACHING = {"cachePoint": {"type": "default"}}
+
 
 class ConverseResponse(pydantic.BaseModel):
     answer: str
@@ -37,18 +39,27 @@ class ChatLog:
     _USER = "user"
     _ASSISTANT = "assistant"
 
-    def __init__(self, model_ids: list[str], messages: list[dict]) -> None:
+    def __init__(
+        self, model_ids: list[str], messages: list[dict], use_prompt_caching: bool = False
+    ) -> None:
         self.models = model_ids
+        if use_prompt_caching:
+            messages[-1]["content"].append(DEFAULT_CACHING)  # cache initial prompt
         self.history: list[ModelChatLog] = [
             ModelChatLog(modelid=m, chat_history=copy.deepcopy(messages)) for m in self.models
         ]
         self.metrics = {m: ConverseMetrics() for m in model_ids}
         self.usage = {m: ConverseUsage(modelid=m) for m in model_ids}
+        self.use_prompt_caching = use_prompt_caching
+        self.max_checkpoints = 4
+        self.n_cache_checkpoints = 1
 
     def update_stats(self, modelid: str, stats: ConverseResponse):
         # update usage
         self.usage[modelid].inputTokens += stats.usage.inputTokens
         self.usage[modelid].outputTokens += stats.usage.outputTokens
+        self.usage[modelid].cacheReadInputTokens += stats.usage.cacheReadInputTokens
+        self.usage[modelid].cacheWriteInputTokens += stats.usage.cacheWriteInputTokens
         self.metrics[modelid].latencyMs += stats.metrics.latencyMs
 
     def add_assistant_msg(self, message: str, invoke_index: int):
@@ -75,9 +86,19 @@ class ChatLog:
     def wrap_user_msg(self, message: str):
         return self._wrap_converse_msg(message, self._USER)
 
-    @staticmethod
-    def _wrap_converse_msg(message: str, role: str) -> dict[str, str | list[dict]]:
-        return {"role": role, "content": [{"text": message}]}
+    def _wrap_converse_msg(self, message: str, role: str) -> dict:
+        base_msg = {"role": role, "content": [{"text": message}]}
+        if (
+            self.use_prompt_caching
+            and self.n_cache_checkpoints < self.max_checkpoints
+            and role == self._USER
+        ):
+            # add cached checkpoint
+            ## caching after user message is more efficient
+            ## TODO add smart cache expiration / management
+            base_msg["content"].append(DEFAULT_CACHING)  # type: ignore
+            self.n_cache_checkpoints += 1
+        return base_msg
 
     def get_recent_other_answers(self, invoke_index: int) -> list[dict]:
         other_model_answers = []

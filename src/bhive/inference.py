@@ -14,7 +14,11 @@ from bhive.utils import parallel_bedrock_exec
 
 def aggregate_last_responses(
     config: HiveConfig, chatlog: chat.ChatLog, _converse_func: Callable, message: str | None = None
-) -> chat.ConverseResponse:
+) -> chat.ChatLog:
+    assert isinstance(config.aggregator_model_id, str), (
+        f"Must have a valid model id to aggregate responses, found {config.aggregator_model_id=} "
+    )
+
     agg_msg = prompt.aggregate
     for ans in chatlog.get_all_last_text_answers():
         agg_msg += f"\n\nOne agent response: ```{ans}```\n"
@@ -24,7 +28,14 @@ def aggregate_last_responses(
         agg_msg += f"\nAs a reminder, the original question is {message}"
     fmt_msg = chatlog.wrap_user_msg(agg_msg)
     logger.info(f"Aggregating a final response using {config.aggregator_model_id=}")
-    return _converse_func(config.aggregator_model_id, [fmt_msg])
+    response: chat.ConverseResponse = _converse_func(config.aggregator_model_id, [fmt_msg])
+
+    chatlog.add_assistant_msg(response.answer, 0)
+    chatlog.update_stats(config.aggregator_model_id, response)
+    chatlog.add_stop_reason(response.stopReason)
+    chatlog.add_trace(response.trace)
+
+    return chatlog
 
 
 def single_model_single_call(
@@ -58,9 +69,8 @@ def multi_model_single_call(
 
     if config.aggregator_model_id:
         # aggregate an answer
-        return aggregate_last_responses(config, chatlog, _converse_func, message), chatlog
-    else:
-        return chatlog.get_all_last_text_answers(), chatlog
+        chatlog = aggregate_last_responses(config, chatlog, _converse_func, message)
+    return chatlog.get_all_last_text_answers(), chatlog
 
 
 def single_model_multi_call(
@@ -124,9 +134,8 @@ def multi_model_multi_call(
 
     if config.aggregator_model_id:
         # aggregate an answer
-        return aggregate_last_responses(config, chatlog, _converse_func, message), chatlog
-    else:
-        return chatlog.get_all_last_text_answers(), chatlog
+        chatlog = aggregate_last_responses(config, chatlog, _converse_func, message)
+    return chatlog.get_all_last_text_answers(), chatlog
 
 
 def apply_verification(past_answer: str, verifier: Callable[[str], str]) -> str:
