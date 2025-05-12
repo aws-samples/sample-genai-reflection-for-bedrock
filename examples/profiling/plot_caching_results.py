@@ -90,6 +90,8 @@ ax2.fill_between(reflections, p25_c_cost, p75_c_cost, alpha=0.2, color="r")
 # Calculate and add cost reduction annotations
 cost_reductions = calculate_cost_reduction(cost_no_cache, cost_cache)
 for i, reduction in enumerate(cost_reductions):
+    if 0 == i:
+        continue
     y_pos = (means_nc_cost[i] + means_c_cost[i]) / 2
     ax2.annotate(
         f"-{reduction:.1f}%",
