@@ -43,6 +43,8 @@ class HiveConfig(pydantic.BaseModel):
             logger.warning("No need for an aggregator_model when using a single model.")
         if self.single_model_single_call and self.verifier:
             raise ValueError("verifier cannot be provided when using a single model call.")
+        if self.use_prompt_caching:
+            logger.warning("Cache read / write pricing is approximate but may not be exact.")
         return self
 
     @property
