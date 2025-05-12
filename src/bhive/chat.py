@@ -95,6 +95,7 @@ class ChatLog:
         ):
             # add cached checkpoint
             ## caching after user message is more efficient
+            ## TODO add smart cache expiration / management
             base_msg["content"].append(DEFAULT_CACHING)  # type: ignore
             self.n_cache_checkpoints += 1
         return base_msg
