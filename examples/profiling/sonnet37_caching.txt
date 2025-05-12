@@ -1,0 +1,84 @@
+us.anthropic.claude-3-7-sonnet-20250219-v1:0, currency = $ USD
+
+Repeat 1 of 3
+n_reflections=0 use_prompt_caching=False:
+latencyMs=11675 value=0.01265
+
+n_reflections=0 use_prompt_caching=True:
+latencyMs=16242 value=0.0112
+
+Repeat 1 of 3
+n_reflections=1 use_prompt_caching=False:
+latencyMs=29638 value=0.027498
+
+n_reflections=1 use_prompt_caching=True:
+latencyMs=30588 value=0.0265158
+
+Repeat 1 of 3
+n_reflections=2 use_prompt_caching=False:
+latencyMs=41972 value=0.050304
+
+n_reflections=2 use_prompt_caching=True:
+latencyMs=83311 value=0.042536
+
+Repeat 1 of 3
+n_reflections=3 use_prompt_caching=False:
+latencyMs=59327 value=0.075846
+
+n_reflections=3 use_prompt_caching=True:
+latencyMs=66972 value=0.0539265
+
+Repeat 2 of 3
+n_reflections=0 use_prompt_caching=False:
+latencyMs=13147 value=0.011328
+
+n_reflections=0 use_prompt_caching=True:
+latencyMs=12808 value=0.01035
+
+Repeat 2 of 3
+n_reflections=1 use_prompt_caching=False:
+latencyMs=28086 value=0.028629
+
+n_reflections=1 use_prompt_caching=True:
+latencyMs=28980 value=0.023845
+
+Repeat 2 of 3
+n_reflections=2 use_prompt_caching=False:
+latencyMs=56863 value=0.054258
+
+n_reflections=2 use_prompt_caching=True:
+latencyMs=40756 value=0.0402345
+
+Repeat 2 of 3
+n_reflections=3 use_prompt_caching=False:
+latencyMs=53439 value=0.079761
+
+n_reflections=3 use_prompt_caching=True:
+latencyMs=54692 value=0.0577167
+
+Repeat 3 of 3
+n_reflections=0 use_prompt_caching=False:
+latencyMs=18954 value=0.011679
+
+n_reflections=0 use_prompt_caching=True:
+latencyMs=12071 value=0.011184
+
+Repeat 3 of 3
+n_reflections=1 use_prompt_caching=False:
+latencyMs=26993 value=0.027141
+
+n_reflections=1 use_prompt_caching=True:
+latencyMs=32395 value=0.024722
+
+Repeat 3 of 3
+n_reflections=2 use_prompt_caching=False:
+latencyMs=48044 value=0.04917
+
+n_reflections=2 use_prompt_caching=True:
+latencyMs=37015 value=0.038704
+
+n_reflections=3 use_prompt_caching=False:
+latencyMs=65698 value=0.081615
+
+n_reflections=3 use_prompt_caching=True:
+latencyMs=84885 value=0.0578

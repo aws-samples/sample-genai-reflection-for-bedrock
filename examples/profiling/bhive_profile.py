@@ -4,6 +4,7 @@ import argparse
 from botocore.config import Config
 from bhive import Hive, HiveConfig, set_logger_level
 import cProfile
+import uuid
 
 set_logger_level("WARNING")
 
@@ -20,7 +21,7 @@ BEDROCK_CONFIG = Config(region_name="us-west-2")
 client = Hive(client_config=BEDROCK_CONFIG)
 
 with open(f"{dir_path}/test_prompt.txt", "r") as f:
-    sample_question = f.read()
+    sample_prompt = f.read()
 
 
 def profile_hive(
@@ -35,6 +36,7 @@ def profile_hive(
         aggregator_model_id=aggregator,
         use_prompt_caching=use_prompt_caching,
     )
+    sample_question = f"Test Id {uuid.uuid4()}\n{sample_prompt}"
     messages = [{"role": "user", "content": [{"text": sample_question}]}]
     _out = client.converse(messages, _config)  # same simple question each time
 
