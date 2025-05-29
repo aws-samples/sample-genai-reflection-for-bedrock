@@ -6,7 +6,6 @@ SPDX-License-Identifier: Apache-2.0
 from typing import Callable
 
 import pydantic
-
 from bhive import logger
 
 
@@ -20,6 +19,7 @@ class HiveConfig(pydantic.BaseModel):
         aggregator_model_id (str | None): An optional aggregator model, to combine multiple model's responses.
         verifier (Callable[[str], str] | None): An optional callable for verifying thinking steps.
         use_prompt_caching (bool): An optional flag to enable Bedrock prompt caching during reflection.
+        output_model (type[pydantic.BaseModel]): An optional Pydantic BaseModel for structured outputs.
     """
 
     bedrock_model_ids: list[str]
@@ -27,6 +27,7 @@ class HiveConfig(pydantic.BaseModel):
     aggregator_model_id: str | None = None
     verifier: Callable[[str], str] | None = None
     use_prompt_caching: bool = False
+    output_model: type[pydantic.BaseModel] | None = None
 
     @pydantic.field_validator("bedrock_model_ids")
     @classmethod
