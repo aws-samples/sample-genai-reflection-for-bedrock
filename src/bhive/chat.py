@@ -22,6 +22,7 @@ class ConverseResponse(pydantic.BaseModel):
 
 class HiveOutput(pydantic.BaseModel):
     response: str | list[str]
+    parsed_response: pydantic.BaseModel | list[pydantic.BaseModel] | None
     chat_history: list["ModelChatLog"]
     usage: dict[str, ConverseUsage]
     metrics: dict[str, ConverseMetrics]
