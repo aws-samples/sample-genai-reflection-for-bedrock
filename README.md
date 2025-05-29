@@ -1,6 +1,14 @@
 # 🐝 GenAI Reflection for Bedrock
 
-A configurable extension to Bedrock which enhances performance by enabling additional compute at inference time, allowing you to tradeoff the cost, accuracy and latency of a Bedrock solution. We have seen significant performance gains over a single Bedrock call for a wide range of domains using these techniques as shown below:
+A configurable extension to Bedrock which enhances performance by enabling additional compute at inference time, allowing you to tradeoff the cost, accuracy and latency of a Bedrock solution using the following features:
+
+* **Reflection** - Enables models to iteratively refine their responses through multiple rounds of self-reflection with external verification systems
+* **Multi-Model** - Supports parallel inference across multiple Bedrock models for collaborative problem solving with aggregated responses
+* **Prompt Caching** - Caches model responses to avoid redundant API calls and reduce costs
+* **Structured Outputs** - Validates and formats model outputs into consistent structured data
+* **Budget Optimisation** - Automatically searches for the optimal inference-time configuration considering cost and latency constraints
+
+We have seen significant performance gains over a single Bedrock call for a wide range of domains using these techniques as shown below:
 
 <p align="center" width="100%">
     <img src="./examples/benchmarks/result.png"/>
