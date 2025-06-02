@@ -8,6 +8,8 @@ Execute these steps to complete your task:
     2. Then write a JSON representation of the model into <json></json> tags.
 
 Here is a complete example below:
+
+<example>
 class Class(BaseModel):
     num_students: int
     teacher: str
@@ -27,6 +29,7 @@ This model requires an integer students and other classroom properties.
     "students": ["Alice", "Bob", "Charlie"]
 }
 </json>
+</example>
 
 Be sure to respect the same data types and exact JSON structure as you are provided.
 As a reminder, if setting any properties to None you should use the JSON null value.
@@ -46,7 +49,7 @@ def parse(text: str, parsing_model: type[pydantic.BaseModel]) -> pydantic.BaseMo
 def prompt(parsing_model: type[pydantic.BaseModel]) -> str:
     """Generates an additional prompt suffix to encourage Pydantic JSON outputs"""
     model_def = inspect.getsource(parsing_model)
-    return BASE_PROMPT + f"Here is the Pydantic model with data types:\n{model_def}"
+    return BASE_PROMPT + f"\nHere is the Pydantic model with data types:\n{model_def}"
 
 
 def parsing_function(text: str) -> str:

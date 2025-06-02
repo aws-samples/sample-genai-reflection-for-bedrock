@@ -86,7 +86,7 @@ class Hive:
         message = messages[0].get("content", [{}])[0].get("text", "")
         if config.output_model and message:
             struct_prompt = struct_output.prompt(config.output_model)
-            messages[0]["content"][0]["text"] = message + struct_prompt
+            messages[0]["content"][0]["text"] = message + f"\n{struct_prompt}"
 
         chatlog = chat.ChatLog(_all_models, messages, config.use_prompt_caching)
         logger.info(f"Starting inference with {config=} and {converse_kwargs=}")
