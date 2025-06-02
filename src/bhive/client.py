@@ -8,7 +8,7 @@ from typing import Callable
 
 from botocore.config import Config
 
-from bhive import chat, config, cost, inference, logger
+from bhive import chat, config, cost, inference, logger, struct_output
 from bhive.evaluators import BudgetConfig, GridResults, TrialResult, answer_in_text
 from bhive.utils import create_bedrock_client, parse_bedrock_output
 
@@ -81,9 +81,15 @@ class Hive:
         _all_models = config.bedrock_model_ids
         if config.aggregator_model_id:
             _all_models += [config.aggregator_model_id]
+
+        # NOTE assumes first message holds the user prompt
+        message = messages[0].get("content", [{}])[0].get("text", "")
+        if config.output_model and message:
+            struct_prompt = struct_output.prompt(config.output_model)
+            messages[0]["content"][0]["text"] = message + f"\n{struct_prompt}"
+
         chatlog = chat.ChatLog(_all_models, messages, config.use_prompt_caching)
         logger.info(f"Starting inference with {config=} and {converse_kwargs=}")
-        message = messages[0].get("content", [{}])[0].get("text")
 
         _converse_func = functools.partial(self._converse, **converse_kwargs)
         response: str | list[str] | None = None
@@ -109,9 +115,18 @@ class Hive:
                 config, chatlog, _converse_func, message
             )
 
-        logger.info(f"Retrieved final answer of {response}")
+        # parsing structured outputs
+        parsed_response = None
+        if config.output_model:
+            if isinstance(response, list):
+                parsed_response = [struct_output.parse(r, config.output_model) for r in response]
+            else:
+                parsed_response = struct_output.parse(response, config.output_model)
+
+        logger.info(f"Generated final {response=} and {parsed_response=}")
         return chat.HiveOutput(
             response=response,
+            parsed_response=parsed_response,
             chat_history=chatlog.history,
             usage=chatlog.usage,
             metrics=chatlog.metrics,
