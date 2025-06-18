@@ -1,4 +1,4 @@
-## Experimnental Results
+## Experimental Results
 
 The tradeoff between accuracy, latency, and cost is crucial for selecting an inference strategy. Each task or problem domain is likely to have a unique profile, but we can use this math benchmark as a rough guideline as shown below.
 
