@@ -18,27 +18,11 @@ We have seen significant performance gains over a single Bedrock call for a wide
 
 ## 📦 Installation
 
-### Local
+After cloning this repository you can run the following inside a virtual environment:
 
-When working on your local machine or virtual machine with ability to create a `pip` config follow these steps:
-
-* Follow the [package registry guidance](https://quip-amazon.com/DHVAAHndixT7/GitLab-Package-Registry) to setup a local `pip` configuration for installing GitLab packages.
-
-* Then install the library:
-    ```bash
-    pip install bee_hive
-    ```
-
-### Client
-
-If you find yourself working within a client account and do not have access to your usual pip configuration, the ability to install remote packages, or your GitLab credentials, you can still install Python packages directly from a source wheel file.
-
-* Download the latest `.whl` file from [the package registry](https://gitlab.aws.dev/genaiic-reusable-assets/utilities/bee_hive/-/packages) e.g. `bee_hive-<version>-py3-none-any.whl`
-
-* Then install the library:
-    ```bash
-    pip install bee_hive-<version>-py3-none-any.whl
-    ```
+```
+pip install .
+```
 
 ## 💬 Usage
 

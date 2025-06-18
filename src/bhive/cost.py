@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 # NOTE hardcoded costs is far from ideal
 ## but it's surprisingly hard to programmatically retrieve bedrock costs / token
-## see > https://amzn-aws.slack.com/archives/C053FAVNMT3/p1718310667442179
 ## somebody please help if a better way is discovered :pray
 
 import pydantic

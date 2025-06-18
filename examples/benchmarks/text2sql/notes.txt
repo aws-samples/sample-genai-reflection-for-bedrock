@@ -5,5 +5,5 @@ and multiple rounds of self-reflection on the answers
 with the use of a verifier which ran the code and provided feedback
 
 Data:
-The data was a collection of tables from the spider benchmark and evaluation closely followed the work done in; https://gitlab.aws.dev/genaiic-reusable-assets/utilities/text2sql-spider-evaluation.
+The data was a collection of tables from the spider benchmark and evaluation
 The metric used was the exact match of the generated SQL to the ground truth but we also looked at matching the expected output via different code.
