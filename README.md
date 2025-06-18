@@ -273,4 +273,4 @@ Chat to the team if you have new feature suggestions or bug fixes!
 > Yes, it mirrors the BedrockRuntime `converse()` messages structure and will perform inference with any modality.
 
 3. Can I authenticate with my own `boto3` client?
-> Yes, you can pass an initialised client instance to the `Hive` class, otherwise we will try to create a client from the `AWS_PROFILE` environment variable.
+> Yes, you can pass an already initialised client instance to the `Hive` class, otherwise we will try to create a client from the `AWS_PROFILE` environment variable.
