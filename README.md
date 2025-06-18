@@ -264,38 +264,6 @@ results = hive_client.optimise(dataset, trial_config)
 
 Chat to the team if you have new feature suggestions or bug fixes!
 
-### Tooling
-
-We use `uv`, a fast rust-based python tool for managing dependencies. Although you don't have to use `uv` for working on this package, I recommend you try it out and read more on [their website](https://docs.astral.sh/uv/).
-
-Some convenient example commands are;
-
-```bash
-uv python install / list / uninstall # for handling python versions
-
-uv add / remove / sync / lock # for handling python dependencies
-
-uv run example.py # for running scripts inside an environment
-```
-
-[`Pre-commit`](https://pre-commit.com/) is used for handling linting, type checking and other code hygiene related factors. We use `pytest` as our testing framework of choice, read more about their documentation [here](https://docs.pytest.org/en/stable/). In particular, we use a convention for starting all test functions with `should_` as it encourages a more declarative mindset around test writing. If you don't use this convention, the tests will not be picked up in `pytest`.
-
-```bash
-uv run pre-commit run # runs pre-commit stack
-
-uv run pytest -v # runs tests
-```
-
-Logging is handled via [`loguru`](https://github.com/Delgan/loguru) as it's very simple to use and sufficient for most use cases. It is by default set to the `INFO` level but developers can change it to `DEBUG` to see more detailed output or `WARNING` to see less by running the following snippet locally:
-
-```python
-import sys
-from loguru import logger
-
-logger.remove() # removes existing logger
-logger.add(sys.stderr, level="<level>") # adds a logger with DEBUG or WARNING or another level
-```
-
 ## FAQs
 
 1. Can I use this with any model on Bedrock?
