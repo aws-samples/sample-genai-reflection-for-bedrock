@@ -1,14 +1,14 @@
-# 🐝 GenAI Reflection for Bedrock
+# 🐝 GenAI Reflection for Amazon Bedrock
 
-A configurable extension to Bedrock which enhances performance by enabling additional compute at inference time, allowing you to tradeoff the cost, accuracy and latency of a Bedrock solution using the following features:
+A configurable extension to Amazon Bedrock which enhances performance by enabling additional compute at inference time, allowing you to tradeoff the cost, accuracy and latency of an Amazon Bedrock solution using the following features:
 
 * **Reflection** - Enables models to iteratively refine their responses through multiple rounds of self-reflection with external verification systems
-* **Multi-Model** - Supports parallel inference across multiple Bedrock models for collaborative problem solving with aggregated responses
+* **Multi-Model** - Supports parallel inference across multiple Amazon Bedrock models for collaborative problem solving with aggregated responses
 * **Prompt Caching** - Caches model responses to avoid redundant API calls and reduce costs
 * **Structured Outputs** - Validates and formats model outputs into consistent structured data
 * **Budget Optimisation** - Automatically searches for the optimal inference-time configuration considering cost and latency constraints
 
-We have seen significant performance gains over a single Bedrock call for a wide range of domains using these techniques as shown below:
+We have seen significant performance gains over a single Amazon Bedrock call for a wide range of domains using these techniques as shown below:
 
 <p align="center" width="100%">
     <img src="./examples/benchmarks/result.png"/>
@@ -115,7 +115,7 @@ def text2sql_verifier(context: str) -> str:
 
 ### 3) Using Multiple Models
 
-You can also incorporate multiple different Bedrock models to collaboratively try to solve your task. In order to use this functionality you need to provide an `aggregator_model_id` which performs the role of summarising the last debate round into a final response. The example code below would implement the following inference method where <span style="color: #005f99;">blue</span> signifies a Claude response and <span style="color: #e63946;">red</span> a response from Mistral.
+You can also incorporate multiple different Amazon Bedrock models to collaboratively try to solve your task. In order to use this functionality you need to provide an `aggregator_model_id` which performs the role of summarising the last debate round into a final response. The example code below would implement the following inference method where <span style="color: #005f99;">blue</span> signifies a Claude response and <span style="color: #e63946;">red</span> a response from Mistral.
 
 ```mermaid
 graph LR;
@@ -211,7 +211,7 @@ You can also apply the verifier from the previous stage in this inference method
 
 ### 4) Optimisation
 
-If you are not sure which exact hyperparameter configuration will suit your needs, you can use the hyperparameter optimisation functionality. Here, you can define a set of ranges for the inference parameters such as the Bedrock models or rounds of reflection and these will be evaluated for against a test dataset. You can also specify a budget constraining the maximum cost ($) and maximum latency (seconds) per example.
+If you are not sure which exact hyperparameter configuration will suit your needs, you can use the hyperparameter optimisation functionality. Here, you can define a set of ranges for the inference parameters such as the Amazon Bedrock models or rounds of reflection and these will be evaluated for against a test dataset. You can also specify a budget constraining the maximum cost ($) and maximum latency (seconds) per example.
 
 ```mermaid
 graph LR
@@ -266,7 +266,7 @@ Chat to the team if you have new feature suggestions or bug fixes!
 
 ## FAQs
 
-1. Can I use this with any model on Bedrock?
+1. Can I use this with any model on Amazon Bedrock?
 > The model must support conversation history to be used, this rules out certain models such as `Jurassic-2 Ultra` which do not have this capability.
 
 2. Does it support multimodal queries?
