@@ -24,7 +24,6 @@ After cloning this repository you can run the following inside a virtual environ
 pip install .
 ```
 
-
 ## 💬 Usage
 
 There are a variety of ways to leverage this in your project:
