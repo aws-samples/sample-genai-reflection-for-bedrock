@@ -24,6 +24,7 @@ After cloning this repository you can run the following inside a virtual environ
 pip install .
 ```
 
+
 ## 💬 Usage
 
 There are a variety of ways to leverage this in your project:
@@ -254,6 +255,7 @@ results = hive_client.optimise(dataset, trial_config)
 
 > By default `Hive.optimise` will directly compare string responses but you can pick from (and extend) other evaluators available in `bhive.evaluators`.
 
+
 ## 🤝 Contributor Guidelines
 
 ### Team
@@ -263,6 +265,7 @@ results = hive_client.optimise(dataset, trial_config)
 | [Jack Butler](https://www.linkedin.com/in/jackbutler-a/) | [Nikita Kozodoi](https://www.linkedin.com/in/kozodoi/) |
 
 Chat to the team if you have new feature suggestions or bug fixes!
+
 
 ## FAQs
 
