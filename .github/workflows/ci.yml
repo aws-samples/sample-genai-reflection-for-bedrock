@@ -1,15 +1,12 @@
-name: Python CI
+name: CI
 
 on:
   push:
     branches:
-      - test-ci
-      # - main
+      - main
   pull_request:
     branches:
-      - test-ci
-      # - main
-  workflow_dispatch:
+      - main
 
 jobs:
   lint:
@@ -37,25 +34,3 @@ jobs:
       - run: pip install pytest pytest-mock
       - run: pip install .
       - run: pytest
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.event_name == 'workflow_dispatch'  # manual only
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Python 3.12
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
-      - run: pip install -U pip setuptools wheel
-      - run: pip install build twine
-      - run: python -m build
-      - name: Publish package to GitHub Packages
-        env:
-          TWINE_USERNAME: github
-          TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python -m twine upload \
-            --repository-url https://upload.pypi.pkg.github.com/aws-samples/sample-genai-reflection-for-bedrock \
-            dist/* --verbose
