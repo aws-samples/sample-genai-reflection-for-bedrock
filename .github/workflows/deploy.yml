@@ -1,25 +1,44 @@
-name: Deploy
+name: Build and Release
 
 on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-release:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # required to create a release
+
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Python 3.12
+
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
-      - run: pip install -U pip setuptools wheel
-      - run: pip install build twine
-      - run: python -m build
-      - name: Publish package to GitHub Packages
-        env:
-          TWINE_USERNAME: github
-          TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install build tools
         run: |
-          python -m twine upload \
-            --repository-url https://upload.pypi.pkg.github.com/aws-samples/sample-genai-reflection-for-bedrock \
-            dist/* --verbose
+          pip install --upgrade pip setuptools wheel build
+
+      - name: Extract version from pyproject.toml
+        id: get_version
+        run: |
+          VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build package
+        run: |
+          python -m build
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: Release v${{ steps.get_version.outputs.version }}
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
