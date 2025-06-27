@@ -1,0 +1,25 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+      - run: pip install -U pip setuptools wheel
+      - run: pip install build twine
+      - run: python -m build
+      - name: Publish package to GitHub Packages
+        env:
+          TWINE_USERNAME: github
+          TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m twine upload \
+            --repository-url https://upload.pypi.pkg.github.com/aws-samples/sample-genai-reflection-for-bedrock \
+            dist/* --verbose
