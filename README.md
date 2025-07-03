@@ -18,11 +18,35 @@ We have seen significant performance gains over a single Amazon Bedrock call for
 
 ## 📦 Installation
 
-After cloning this repository you can run the following inside a virtual environment:
+The easiest way to install our latest repository is by running the following command:
+
+```bash
+pip install git+https://github.com/aws-samples/sample-genai-reflection-for-bedrock.git
+```
+
+Alternatively if you prefer a specific commit or version
+
+```bash
+pip install git+https://github.com/aws-samples/sample-genai-reflection-for-bedrock.git@<commit_sha> # replace <commit_sha>
+pip install git+https://github.com/aws-samples/sample-genai-reflection-for-bedrock.git@<version> # replace <version> e.g. v0.7.1
+```
+
+Additionally, these installation urls can be appended to a `requirements.txt` file as shown:
 
 ```
-pip install .
+git+https://github.com/aws-samples/sample-genai-reflection-for-bedrock.git
+... # other packages
 ```
+
+Finally, if you want control over the specific package you can clone the repository and install directly.
+
+```bash
+git clone https://github.com/aws-samples/sample-genai-reflection-for-bedrock.git
+cd sample-genai-reflection-for-bedrock
+pip install -e .
+```
+
+The above methods have analogies to GitLab's package registry as well.
 
 ## 💬 Usage
 
