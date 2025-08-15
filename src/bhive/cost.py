@@ -71,6 +71,18 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
         input_per_1000=0.015,
         output_per_1000=0.075,
     ),
+    "anthropic.claude-opus-4-1-20250805-v1:0": TokenPrices(
+        input_per_1000=0.015,
+        output_per_1000=0.075,
+    ),
+    "openai.gpt-oss-120b-1:0": TokenPrices(
+        input_per_1000=0.00015,
+        output_per_1000=0.0006,
+    ),
+    "openai.gpt-oss-20b-1:0": TokenPrices(
+        input_per_1000=0.00007,
+        output_per_1000=0.0003,
+    ),
     "deepseek.r1-v1:0": TokenPrices(
         input_per_1000=0.00135,
         output_per_1000=0.0054,
