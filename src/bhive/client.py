@@ -88,6 +88,11 @@ class Hive:
             struct_prompt = struct_output.prompt(config.output_model)
             messages[0]["content"][0]["text"] = message + f"\n{struct_prompt}"
 
+        # Adds system prompt caching
+        system_prompt = converse_kwargs.get("system")
+        if system_prompt and config.use_prompt_caching:
+            converse_kwargs["system"].append(chat.DEFAULT_CACHING)
+
         chatlog = chat.ChatLog(_all_models, messages, config.use_prompt_caching)
         logger.info(f"Starting inference with {config=} and {converse_kwargs=}")
 
