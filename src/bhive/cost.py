@@ -75,16 +75,12 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
         input_per_1000=0.015,
         output_per_1000=0.075,
     ),
-    "openai.gpt-oss-120b-1:0": TokenPrices(
-        input_per_1000=0.00015,
-        output_per_1000=0.0006,
-    ),
-    "openai.gpt-oss-20b-1:0": TokenPrices(
-        input_per_1000=0.00007,
-        output_per_1000=0.0003,
-    ),
     "deepseek.r1-v1:0": TokenPrices(
         input_per_1000=0.00135,
+        output_per_1000=0.00168,
+    ),
+    "deepseek.v3-v1:0": TokenPrices(
+        input_per_1000=0.00058,
         output_per_1000=0.0054,
     ),
     "meta.llama4-maverick-17b-instruct-v1:0": TokenPrices(
@@ -128,6 +124,30 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
     "mistral.mixtral-8x7b-instruct-v0:1": TokenPrices(
         input_per_1000=0.00045,
         output_per_1000=0.0007,
+    ),
+    "openai.gpt-oss-120b-1:0": TokenPrices(
+        input_per_1000=0.00015,
+        output_per_1000=0.0006,
+    ),
+    "openai.gpt-oss-20b-1:0": TokenPrices(
+        input_per_1000=0.00007,
+        output_per_1000=0.0003,
+    ),
+    "qwen.qwen3-coder-30b-a3b-v1:0": TokenPrices(
+        input_per_1000=0.00015,
+        output_per_1000=0.0006,
+    ),
+    "qwen.qwen3-32b-v1:0": TokenPrices(
+        input_per_1000=0.00015,
+        output_per_1000=0.0006,
+    ),
+    "qwen.qwen3-235b-a22b-2507-v1:0": TokenPrices(
+        input_per_1000=0.00022,
+        output_per_1000=0.00088,
+    ),
+    "qwen.qwen3-coder-480b-a35b-v1:0": TokenPrices(
+        input_per_1000=0.00022,
+        output_per_1000=0.0018,
     ),
     "writer.palmyra-x4-v1:0": TokenPrices(input_per_1000=0.0025, output_per_1000=0.010),
     "writer.palmyra-x5-v1:0": TokenPrices(input_per_1000=0.0006, output_per_1000=0.006),
@@ -173,7 +193,7 @@ def calculate_cost(
 ) -> float:
     total_cost = 0.0
     for modelid, tokens in usage.items():
-        if modelid.startswith(("us.", "eu.")):
+        if modelid.startswith(("global.", "us.", "eu.")):
             logger.info("Removing cross-region prefix from the model ID")
             modelid = modelid.split(".", 1)[1]
         cost_per_token = cost_dictionary.get(modelid)
