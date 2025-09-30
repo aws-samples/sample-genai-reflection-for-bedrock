@@ -67,6 +67,10 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
         input_per_1000=0.003,
         output_per_1000=0.015,
     ),
+    "anthropic.claude-sonnet-4-5-20250929-v1:0": TokenPrices(
+        input_per_1000=0.003,
+        output_per_1000=0.015,
+    ),
     "anthropic.claude-opus-4-20250514-v1:0": TokenPrices(
         input_per_1000=0.015,
         output_per_1000=0.075,
