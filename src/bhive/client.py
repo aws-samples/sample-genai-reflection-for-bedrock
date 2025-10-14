@@ -132,6 +132,7 @@ class Hive:
         return chat.HiveOutput(
             response=response,
             parsed_response=parsed_response,
+            thinking=chatlog.get_last_thinking(),
             chat_history=chatlog.history,
             usage=chatlog.usage,
             metrics=chatlog.metrics,
@@ -158,9 +159,10 @@ class Hive:
         if status_code != 200:
             logger.error(f"Converse call failed for {model_id=} with {status_code=}")
             converse_response = chat.ConverseResponse(answer="Failed to provide a response.")
-        answer = parse_bedrock_output(response)
+        answer, thinking = parse_bedrock_output(response)
         converse_response = chat.ConverseResponse(
             answer=answer,
+            thinking=thinking,
             usage=response["usage"],
             metrics=response["metrics"],
             stopReason=response["stopReason"],

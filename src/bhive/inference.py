@@ -20,7 +20,7 @@ def aggregate_last_responses(
     )
 
     agg_msg = prompt.aggregate
-    for ans in chatlog.get_all_last_text_answers():
+    for ans in chatlog.get_last_answer():
         agg_msg += f"\n\nOne agent response: ```{ans}```\n"
         if config.verifier:
             agg_msg += apply_verification(ans, config.verifier)
@@ -31,6 +31,8 @@ def aggregate_last_responses(
     response: chat.ConverseResponse = _converse_func(config.aggregator_model_id, [fmt_msg])
 
     chatlog.add_assistant_msg(response.answer, 0)
+    if response.thinking:
+        chatlog.add_thinking_trace(response.thinking, 0)
     chatlog.update_stats(config.aggregator_model_id, response)
     chatlog.add_stop_reason(response.stopReason)
     chatlog.add_trace(response.trace)
@@ -47,6 +49,8 @@ def single_model_single_call(
         model_id=modelid, messages=chatlog.history[0].chat_history
     )
     chatlog.add_assistant_msg(response.answer, 0)
+    if response.thinking:
+        chatlog.add_thinking_trace(response.thinking, 0)
     chatlog.update_stats(modelid, response)
     chatlog.add_stop_reason(response.stopReason)
     chatlog.add_trace(response.trace)
@@ -63,6 +67,8 @@ def multi_model_single_call(
     )
     for (index, modelid), response in responses.items():
         chatlog.add_assistant_msg(response.answer, index)
+        if response.thinking:
+            chatlog.add_thinking_trace(response.thinking, index)
         chatlog.update_stats(modelid, response)
         chatlog.add_stop_reason(response.stopReason)
         chatlog.add_trace(response.trace)
@@ -70,7 +76,7 @@ def multi_model_single_call(
     if config.aggregator_model_id:
         # aggregate an answer
         chatlog = aggregate_last_responses(config, chatlog, _converse_func, message)
-    return chatlog.get_all_last_text_answers(), chatlog
+    return chatlog.get_last_answer(), chatlog
 
 
 def single_model_multi_call(
@@ -82,7 +88,10 @@ def single_model_multi_call(
         if 0 < n_reflect:
             reflect_msg = prompt.reflect + "\n"
             if config.verifier:
-                past_answer = chatlog.get_last_answer(invoke_index=0)
+                past_answer = chatlog.get_last_answer()
+                assert isinstance(past_answer, str), (
+                    "Received multiple responds when doing a single model call"
+                )
                 reflect_msg += apply_verification(past_answer, config.verifier)
             if message:
                 reflect_msg += f"\nAs a reminder, the original question is {message}"
@@ -91,6 +100,8 @@ def single_model_multi_call(
             model_id=modelid, messages=chatlog.history[0].chat_history
         )
         chatlog.add_assistant_msg(response.answer, invoke_index=0)
+        if response.thinking:
+            chatlog.add_thinking_trace(response.thinking, invoke_index=0)
         chatlog.update_stats(modelid, response)
         chatlog.add_stop_reason(response.stopReason)
         chatlog.add_trace(response.trace)
@@ -128,6 +139,8 @@ def multi_model_multi_call(
         )
         for (index, modelid), response in responses.items():
             chatlog.add_assistant_msg(response.answer, index)
+            if response.thinking:
+                chatlog.add_thinking_trace(response.thinking, index)
             chatlog.update_stats(modelid, response)
             chatlog.add_stop_reason(response.stopReason)
             chatlog.add_trace(response.trace)
@@ -135,7 +148,7 @@ def multi_model_multi_call(
     if config.aggregator_model_id:
         # aggregate an answer
         chatlog = aggregate_last_responses(config, chatlog, _converse_func, message)
-    return chatlog.get_all_last_text_answers(), chatlog
+    return chatlog.get_last_answer(), chatlog
 
 
 def apply_verification(past_answer: str, verifier: Callable[[str], str]) -> str:
