@@ -14,15 +14,17 @@ DEFAULT_CACHING = {"cachePoint": {"type": "default"}}
 
 class ConverseResponse(pydantic.BaseModel):
     answer: str
-    usage: ConverseUsage
-    metrics: ConverseMetrics
-    stopReason: str
-    trace: dict[str, dict]
+    thinking: str = ""
+    usage: ConverseUsage = ConverseUsage()
+    metrics: ConverseMetrics = ConverseMetrics()
+    stopReason: str = ""
+    trace: dict[str, dict] = {}
 
 
 class HiveOutput(pydantic.BaseModel):
     response: str | list[str]
     parsed_response: pydantic.BaseModel | list[pydantic.BaseModel] | None
+    thinking: str | list[str]
     chat_history: list["ModelChatLog"]
     usage: dict[str, ConverseUsage]
     metrics: dict[str, ConverseMetrics]
@@ -34,6 +36,7 @@ class HiveOutput(pydantic.BaseModel):
 class ModelChatLog(pydantic.BaseModel):
     modelid: str
     chat_history: list[dict]
+    thinking_history: list[str]
 
 
 class ChatLog:
@@ -47,10 +50,11 @@ class ChatLog:
         if use_prompt_caching:
             messages[-1]["content"].append(DEFAULT_CACHING)  # cache initial prompt
         self.history: list[ModelChatLog] = [
-            ModelChatLog(modelid=m, chat_history=copy.deepcopy(messages)) for m in self.models
+            ModelChatLog(modelid=m, chat_history=copy.deepcopy(messages), thinking_history=[])
+            for m in self.models
         ]
         self.metrics = {m: ConverseMetrics() for m in model_ids}
-        self.usage = {m: ConverseUsage(modelid=m) for m in model_ids}
+        self.usage = {m: ConverseUsage() for m in model_ids}
         self.use_prompt_caching = use_prompt_caching
         self.max_checkpoints = 4
         self.n_cache_checkpoints = 1
@@ -80,6 +84,9 @@ class ChatLog:
     def _add_msg(self, message: str, role: str, invoke_index: int):
         fmt_message = self._wrap_converse_msg(message, role)
         self.history[invoke_index].chat_history.append(fmt_message)
+
+    def add_thinking_trace(self, thinking: str, invoke_index: int):
+        self.history[invoke_index].thinking_history.append(thinking)
 
     def wrap_assistant_msg(self, message: str):
         return self._wrap_converse_msg(message, self._ASSISTANT)
@@ -112,8 +119,16 @@ class ChatLog:
             other_model_answers.append(assistant_msgs[-1])
         return other_model_answers
 
-    def get_last_answer(self, invoke_index: int) -> str:
-        return self.history[invoke_index].chat_history[-1]["content"][0]["text"]
+    def get_last_answer(self) -> list[str] | str:
+        last_answers = [m.chat_history[-1]["content"][0]["text"] for m in self.history]
+        if 1 < len(last_answers):
+            return last_answers
+        return last_answers[0]
 
-    def get_all_last_text_answers(self) -> list[str]:
-        return [m.chat_history[-1]["content"][0]["text"] for m in self.history]
+    def get_last_thinking(self) -> list[str] | str:
+        last_thinking_traces = [
+            m.thinking_history[-1] if m.thinking_history else "" for m in self.history
+        ]
+        if 1 < len(last_thinking_traces):
+            return last_thinking_traces
+        return last_thinking_traces[0]
