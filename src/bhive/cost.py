@@ -83,6 +83,10 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
         input_per_1000=0.015,
         output_per_1000=0.075,
     ),
+    "anthropic.claude-opus-4-5-20251101-v1:0": TokenPrices(
+        input_per_1000=0.005,
+        output_per_1000=0.025,
+    ),
     "deepseek.r1-v1:0": TokenPrices(
         input_per_1000=0.00135,
         output_per_1000=0.00168,
