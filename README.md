@@ -14,7 +14,10 @@ We have seen significant performance gains over a single Amazon Bedrock call for
     <img src="./examples/benchmarks/result.png"/>
 </p>
 
-> See [task details](./examples/benchmarks/) and [expanded evaluation results](./EXPERIMENTS.md) for more information!
+> See [task details](./examples/benchmarks/) and [expanded evaluation results](./EXPERIMENTS.md) for more information. For detailed benchmarks and experimental results across 10 models and 4 task domains, see our [research paper](https://arxiv.org/abs/2510.20653) presented at NeurIPS 2025 Efficient Reasoning Workshop.
+
+> See [this blog post](https://builder.aws.com/content/37vIFugRgG1ZtuQxUSIeH24x1DM/boost-your-llm-performance-on-amazon-bedrock-with-self-reflection) for extended instructions on installing and using the package.
+
 
 ## 📦 Installation
 
@@ -54,7 +57,7 @@ There are a variety of ways to leverage this in your project:
 
 ### 1) Using a Single Model
 
-Now that you've setup the `Hive` client, the easiest way to leverage it in your project is with a single model and an optional number of reflection rounds as shown below. This configuration enables the model to reflect on its' response and apply more compute to solving a more difficult problem.
+The easiest way to use the library in your project is with a single model and an optional number of reflection rounds as shown below. This configuration enables the model to reflect on its response and apply more compute to solving a more difficult problem.
 
 ```mermaid
 graph LR;
@@ -69,7 +72,7 @@ from bhive import Hive, HiveConfig
 
 bhive_client = Hive()
 bhive_config = HiveConfig(
-    bedrock_model_ids=["anthropic.claude-3-sonnet-20240229-v1:0"],
+    bedrock_model_ids=["anthropic.claude-haiku-4-5-20251001-v1:0"],
     num_reflections=2,
 )
 messages = [{"role": "user", "content": [{"text": "What is 2 + 2?"}]}]
@@ -108,7 +111,7 @@ def twoplustwo_verifier(context: str) -> str:
         return "this answer is wrong"
 
 bhive_config = HiveConfig(
-    bedrock_model_ids=["anthropic.claude-3-sonnet-20240229-v1:0"],
+    bedrock_model_ids=["anthropic.claude-haiku-4-5-20251001-v1:0"],
     num_reflections=2,
     verifier=twoplustwo_verifier
 )
@@ -126,7 +129,7 @@ def text2sql_verifier(context: str) -> str:
     extracted_sql_query = extract_sql(context, "<SQL>")
 
     try:
-        result = execute_sql(db_path=db_path, sql=extracted_context[0])
+        result = execute_sql(db_path=db_path, sql=extracted_sql_query)
         result_df = pd.DataFrame(result)
         base_msg = "The query was executed successfully against the database."
         if not result_df.empty:
@@ -173,11 +176,11 @@ from bhive import Hive, HiveConfig
 
 bhive_client = Hive()
 
-models = ["anthropic.claude-3-sonnet-20240229-v1:0", "mistral.mistral-large-2402-v1:0"]
+models = ["anthropic.claude-haiku-4-5-20251001-v1:0", "amazon.nova-2-lite-v1:0"]
 bhive_config = HiveConfig(
     bedrock_model_ids=models,
     num_reflections=2,
-    aggregator_model_id="anthropic.claude-3-sonnet-20240229-v1:0"
+    aggregator_model_id="anthropic.claude-sonnet-4-5-20250929-v1:0"
 )
 
 messages = [{"role": "user", "content": [{"text": "What is 2 + 2?"}]}]
@@ -219,11 +222,11 @@ from bhive import Hive, HiveConfig
 
 bhive_client = Hive()
 
-models = ["anthropic.claude-3-sonnet-20240229-v1:0", "anthropic.claude-3-sonnet-20240229-v1:0"]
+models = ["anthropic.claude-sonnet-4-5-20250929-v1:0", "anthropic.claude-haiku-4-5-20251001-v1:0"]
 bhive_config = HiveConfig(
     bedrock_model_ids=models,
     num_reflections=2,
-    aggregator_model_id="anthropic.claude-3-sonnet-20240229-v1:0"
+    aggregator_model_id="anthropic.claude-sonnet-4-5-20250929-v1:0"
 )
 
 messages = [{"role": "user", "content": [{"text": "What is 2 + 2?"}]}]
@@ -235,7 +238,7 @@ You can also apply the verifier from the previous stage in this inference method
 
 ### 4) Optimisation
 
-If you are not sure which exact hyperparameter configuration will suit your needs, you can use the hyperparameter optimisation functionality. Here, you can define a set of ranges for the inference parameters such as the Amazon Bedrock models or rounds of reflection and these will be evaluated for against a test dataset. You can also specify a budget constraining the maximum cost ($) and maximum latency (seconds) per example.
+If you are not sure which exact hyperparameter configuration will suit your needs, you can use the hyperparameter optimisation functionality. Here, you can define a set of ranges for the inference parameters such as the Amazon Bedrock models or rounds of reflection and these will be evaluated against a test dataset. You can also specify a budget constraining the maximum cost ($) and maximum latency (seconds) per example.
 
 ```mermaid
 graph LR
@@ -262,8 +265,8 @@ dataset = [
 # define a configuration of models and reflections rounds
 trial_config = TrialConfig(
     bedrock_model_combinations=[
-        ["anthropic.claude-3-sonnet-20240229-v1:0"],
-        ["anthropic.claude-3-haiku-20240307-v1:0"],
+        ["anthropic.claude-sonnet-4-5-20250929-v1:0"],
+        ["anthropic.claude-haiku-4-5-20251001-v1:0"],
         ["mistral.mistral-small-2402-v1:0"],
         ["mistral.mistral-large-2402-v1:0"],
     ],
