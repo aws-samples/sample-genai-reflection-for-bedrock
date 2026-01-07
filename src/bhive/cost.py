@@ -31,6 +31,10 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
         input_per_1000=0.00006,
         output_per_1000=0.00024,
     ),
+    "amazon.nova-2-lite-v1:0": TokenPrices(
+        input_per_1000=0.00033,
+        output_per_1000=0.00275,
+    ),
     "amazon.nova-micro-v1:0": TokenPrices(
         input_per_1000=0.000035,
         output_per_1000=0.00014,
