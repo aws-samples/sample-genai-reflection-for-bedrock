@@ -7,11 +7,16 @@ import concurrent.futures
 from typing import Callable
 
 import boto3
-
+import botocore
 from bhive import logger
 from bhive.chat import ModelChatLog
 
 _RUNTIME_CLIENT_NAME = "bedrock-runtime"
+_DEFAULT_CONFIG = botocore.config.Config(
+    connect_timeout=60,
+    read_timeout=300,
+    retries={"max_attempts": 10, "mode": "adaptive"},
+)
 
 
 def parse_bedrock_output(response: dict) -> tuple[str, str]:
@@ -48,8 +53,6 @@ def parallel_bedrock_exec(func: Callable, chathistory: list[ModelChatLog]) -> di
 
 
 def create_bedrock_client(client_config: dict | None = None):
-    logger.info(f"Creating Bedrock client from environment with {client_config=}.")
-    return boto3.client(
-        service_name=_RUNTIME_CLIENT_NAME,
-        config=client_config,
-    )
+    config = client_config or _DEFAULT_CONFIG
+    logger.info(f"Creating Bedrock client from environment with {config=}.")
+    return boto3.client(service_name=_RUNTIME_CLIENT_NAME, config=config)
