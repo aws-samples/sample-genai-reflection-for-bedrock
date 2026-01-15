@@ -23,8 +23,8 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 include = ["bhive*"]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "matplotlib>=3.9.2",
     "pre-commit>=4.0.1",
     "pytest-mock>=3.14.0",
