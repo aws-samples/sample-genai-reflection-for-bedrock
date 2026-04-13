@@ -97,28 +97,7 @@ class Hive:
         logger.info(f"Starting inference with {config=} and {converse_kwargs=}")
 
         _converse_func = functools.partial(self._converse, **converse_kwargs)
-        response: str | list[str] | None = None
-        if config.single_model_single_call:
-            # single model call
-            response, chatlog = inference.single_model_single_call(config, chatlog, _converse_func)
-
-        elif config.multi_model_single_call:
-            # multi model / single round debate
-            response, chatlog = inference.multi_model_single_call(
-                config, chatlog, _converse_func, message
-            )
-
-        elif config.single_model_multi_call:
-            # single model but reflection
-            response, chatlog = inference.single_model_multi_call(
-                config, chatlog, _converse_func, message
-            )
-
-        else:
-            # multi model + multi round debate
-            response, chatlog = inference.multi_model_multi_call(
-                config, chatlog, _converse_func, message
-            )
+        response, chatlog = inference.run_inference(config, chatlog, _converse_func, message)
 
         # parsing structured outputs
         parsed_response = None

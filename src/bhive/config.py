@@ -28,6 +28,7 @@ class HiveConfig(pydantic.BaseModel):
     verifier: Callable[[str], str] | None = None
     use_prompt_caching: bool = False
     output_model: type[pydantic.BaseModel] | None = None
+    max_reasoning_seconds: float | None = pydantic.Field(default=None, gt=0)
 
     @pydantic.field_validator("bedrock_model_ids")
     @classmethod
@@ -42,7 +43,7 @@ class HiveConfig(pydantic.BaseModel):
             logger.warning("We recommend a final aggregator_model when using multiple models.")
         if self.aggregator_model_id and self.n_models == 1:
             logger.warning("No need for an aggregator_model when using a single model.")
-        if self.single_model_single_call and self.verifier:
+        if self.n_models == 1 and self.no_reflections and self.verifier:
             raise ValueError("verifier cannot be provided when using a single model call.")
         if self.use_prompt_caching:
             logger.warning("Cache read / write pricing is approximate but may not be exact.")
@@ -55,18 +56,6 @@ class HiveConfig(pydantic.BaseModel):
     @property
     def no_reflections(self) -> bool:
         return self.num_reflections == 0
-
-    @property
-    def single_model_single_call(self) -> bool:
-        return self.n_models == 1 and self.no_reflections
-
-    @property
-    def multi_model_single_call(self) -> bool:
-        return self.n_models > 1 and self.no_reflections
-
-    @property
-    def single_model_multi_call(self) -> bool:
-        return self.n_models == 1 and not self.no_reflections
 
 
 class TrialConfig(pydantic.BaseModel):

@@ -236,7 +236,27 @@ print(response)
 
 You can also apply the verifier from the previous stage in this inference method, applying it independently to each revision from each model.
 
-### 4) Optimisation
+### 4) Reasoning Timeout
+
+When using reflection or multi-model debate, you can set `max_reasoning_seconds` to cap the total inference time. If the time limit is reached before all reflection rounds complete, the library returns the best answer available at that point. The initial model call always executes — the timeout only applies to subsequent reflection rounds.
+
+```python
+from bhive import Hive, HiveConfig
+
+bhive_client = Hive()
+bhive_config = HiveConfig(
+    bedrock_model_ids=["anthropic.claude-haiku-4-5-20251001-v1:0"],
+    num_reflections=5,
+    max_reasoning_seconds=10.0,  # return best answer after 10s even if reflections remain
+)
+messages = [{"role": "user", "content": [{"text": "What is 2 + 2?"}]}]
+response = bhive_client.converse(messages, bhive_config)
+print(response)
+```
+
+This is useful for latency-sensitive applications where you want to allow extra reasoning time when available but need a hard upper bound.
+
+### 5) Optimisation
 
 If you are not sure which exact hyperparameter configuration will suit your needs, you can use the hyperparameter optimisation functionality. Here, you can define a set of ranges for the inference parameters such as the Amazon Bedrock models or rounds of reflection and these will be evaluated against a test dataset. You can also specify a budget constraining the maximum cost ($) and maximum latency (seconds) per example.
 
