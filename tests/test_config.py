@@ -25,3 +25,46 @@ def should_raise_error_for_invalid_num_reflections(num_reflections: int):
             num_reflections=num_reflections,
             aggregator_model_id="FAKE_MODEL",
         )
+
+
+# --- Augmentation config validation ---
+
+
+def should_accept_valid_augmentation_methods():
+    for method in ("semantic", "lexical", "visual"):
+        cfg = HiveConfig(
+            bedrock_model_ids=["m1", "m1"],
+            augmentation_method=method,
+            aggregator_model_id="m1",
+        )
+        assert cfg.augmentation_method == method
+
+
+def should_reject_invalid_augmentation_method():
+    with pytest.raises(ValidationError):
+        HiveConfig(bedrock_model_ids=["m1"], augmentation_method="invalid")
+
+
+def should_default_augmentation_model_id_for_llm():
+    cfg = HiveConfig(
+        bedrock_model_ids=["model-a", "model-a"],
+        augmentation_method="semantic",
+        aggregator_model_id="model-a",
+    )
+    assert cfg.augmentation_model_id == "model-a"
+
+
+def should_use_explicit_augmentation_model_id():
+    cfg = HiveConfig(
+        bedrock_model_ids=["model-a", "model-a"],
+        augmentation_method="semantic",
+        augmentation_model_id="model-b",
+        aggregator_model_id="model-a",
+    )
+    assert cfg.augmentation_model_id == "model-b"
+
+
+def should_allow_none_augmentation_method():
+    cfg = HiveConfig(bedrock_model_ids=["m1"])
+    assert cfg.augmentation_method is None
+    assert cfg.augmentation_model_id is None

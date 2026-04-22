@@ -6,6 +6,7 @@ A configurable extension to Amazon Bedrock which enhances performance by enablin
 * **Multi-Model** - Supports parallel inference across multiple Amazon Bedrock models for collaborative problem solving with aggregated responses
 * **Prompt Caching** - Caches model responses to avoid redundant API calls and reduce costs
 * **Structured Outputs** - Validates and formats model outputs into consistent structured data
+* **Input Augmentation** - Generates variations of the input (semantic rephrasing, lexical perturbation, or visual transforms) across parallel model slots for more robust answers
 * **Budget Optimisation** - Automatically searches for the optimal inference-time configuration considering cost and latency constraints
 
 We have seen significant performance gains over a single Amazon Bedrock call for a wide range of domains using these techniques as shown below:
@@ -256,7 +257,35 @@ print(response)
 
 This is useful for latency-sensitive applications where you want to allow extra reasoning time when available but need a hard upper bound.
 
-### 5) Optimisation
+### 5) Input Augmentation
+
+You can augment the input across parallel model slots to improve robustness. Set `augmentation_method` to generate a different variation of the input for each slot before inference. This composes with reflection — each augmented variant independently goes through the full reasoning pipeline.
+
+| Method | What it does | Extra deps |
+|---|---|---|
+| `"semantic"` | LLM rephrases the question per slot | None |
+| `"lexical"` | Keyboard/OCR/spelling perturbations | `nlpaug` |
+| `"visual"` | Rotate/brightness/contrast on images | `Pillow` |
+
+```python
+from bhive import Hive, HiveConfig
+
+bhive_client = Hive()
+bhive_config = HiveConfig(
+    bedrock_model_ids=["anthropic.claude-haiku-4-5-20251001-v1:0"] * 3,
+    augmentation_method="semantic",
+    augmentation_model_id="anthropic.claude-haiku-4-5-20251001-v1:0",
+    num_reflections=1,
+    aggregator_model_id="anthropic.claude-sonnet-4-5-20250929-v1:0",
+)
+messages = [{"role": "user", "content": [{"text": "What is 2 + 2?"}]}]
+response = bhive_client.converse(messages, bhive_config)
+print(response)
+```
+
+The number of augmented variants is determined by the number of model slots (duplicate model IDs). Slot 0 always keeps the original input, and the remaining slots receive augmented variants.
+
+### 6) Optimisation
 
 If you are not sure which exact hyperparameter configuration will suit your needs, you can use the hyperparameter optimisation functionality. Here, you can define a set of ranges for the inference parameters such as the Amazon Bedrock models or rounds of reflection and these will be evaluated against a test dataset. You can also specify a budget constraining the maximum cost ($) and maximum latency (seconds) per example.
 
