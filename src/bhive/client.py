@@ -8,7 +8,7 @@ from typing import Callable
 
 from botocore.config import Config
 
-from bhive import chat, config, cost, inference, logger, struct_output
+from bhive import augment, chat, config, cost, inference, logger, struct_output
 from bhive.evaluators import BudgetConfig, GridResults, TrialResult, answer_in_text
 from bhive.utils import create_bedrock_client, parse_bedrock_output
 
@@ -94,9 +94,12 @@ class Hive:
             converse_kwargs["system"].append(chat.DEFAULT_CACHING)
 
         chatlog = chat.ChatLog(_all_models, messages, config.use_prompt_caching)
+        _converse_func = functools.partial(self._converse, **converse_kwargs)
         logger.info(f"Starting inference with {config=} and {converse_kwargs=}")
 
-        _converse_func = functools.partial(self._converse, **converse_kwargs)
+        # Augmenting input
+        if config.augmentation_method:
+            self._apply_augmentation(config, chatlog, _converse_func)
         response, chatlog = inference.run_inference(config, chatlog, _converse_func, message)
 
         # parsing structured outputs
@@ -149,6 +152,57 @@ class Hive:
         )
         logger.debug(f"Received answer from {model_id}:\n{answer}")
         return converse_response
+
+    def _apply_augmentation(
+        self,
+        hive_config: config.HiveConfig,
+        chatlog: chat.ChatLog,
+        converse_func: Callable,
+    ) -> None:
+        """Mutate chatlog in-place so each model slot (except index 0) gets an augmented input."""
+        num_augment_slots = len(chatlog.history) - 1
+        if num_augment_slots < 1:
+            return
+
+        method = hive_config.augmentation_method
+        first_msg = chatlog.history[0].chat_history[0]
+        text_blocks = [b for b in first_msg["content"] if "text" in b]
+        if not text_blocks:
+            logger.warning("No text block found in first message, skipping augmentation.")
+            return
+        original_text = text_blocks[0]["text"]
+
+        if method == "semantic":
+            assert hive_config.augmentation_model_id is not None
+            variants = augment.augment_llm(
+                original_text,
+                num_augment_slots,
+                converse_func,
+                hive_config.augmentation_model_id,
+                content_blocks=first_msg["content"],
+            )
+        elif method == "lexical":
+            variants = augment.augment_character(original_text, num_augment_slots)
+        elif method == "visual":
+            if not any("image" in b for b in first_msg["content"]):
+                logger.warning("Visual augmentation requested but no images in input, skipping.")
+                return
+            for i in range(1, num_augment_slots + 1):
+                chatlog.history[i].chat_history[0]["content"] = augment.augment_images_in_content(
+                    chatlog.history[i].chat_history[0]["content"]
+                )
+            logger.info(f"Applied 'visual' augmentation to {num_augment_slots} model slot(s).")
+            return
+        else:
+            raise ValueError(f"Unknown augmentation method: {method}")
+
+        for i, variant in enumerate(variants, start=1):
+            for block in chatlog.history[i].chat_history[0]["content"]:
+                if "text" in block:
+                    block["text"] = variant
+                    break
+
+        logger.info(f"Applied '{method}' augmentation to {num_augment_slots} model slot(s).")
 
     def optimise(
         self,

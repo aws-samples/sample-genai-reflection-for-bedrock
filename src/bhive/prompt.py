@@ -9,7 +9,7 @@ The original task description is {task}.
 """
 
 debate = """
-These are the recent answers to the same question from other agents:
+These are the recent answers to the same prompt from other agents:
 """
 
 reflect = """
@@ -21,5 +21,13 @@ Use these opinions carefully as additional advice and examining each solution st
 """
 
 aggregate = """
-You will see proposed answers to the following question from multiple agents, please provide an aggregated final answer.
+You will see proposed answers to the following prompt from multiple agents, please provide an aggregated final answer.
+"""
+
+rephrase = """
+Rephrase the following prompt into {n} different variations that preserve the original meaning.
+Each rephrased prompt should be wrapped in XML tags <q1>...</q1>, <q2>...</q2>, etc.
+Do not answer the prompt, only rephrase it.
+
+Original Prompt: {prompt}
 """
