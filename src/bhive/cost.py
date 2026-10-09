@@ -88,8 +88,8 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
         output_per_1000=0.015,
     ),
     "anthropic.claude-sonnet-5": TokenPrices(
-        input_per_1000=0.003,
-        output_per_1000=0.015,
+        input_per_1000=0.002,
+        output_per_1000=0.010,
     ),
     "anthropic.claude-opus-4-6-v1": TokenPrices(
         input_per_1000=0.005,
@@ -110,6 +110,46 @@ MODELID_COSTS_PER_TOKEN: dict[str, TokenPrices] = {
     "anthropic.claude-fable-5": TokenPrices(
         input_per_1000=0.010,
         output_per_1000=0.050,
+    ),
+    "anthropic.claude-sonnet-5-5": TokenPrices(
+        input_per_1000=0.002,
+        output_per_1000=0.010,
+    ),
+    "anthropic.claude-opus-5-5": TokenPrices(
+        input_per_1000=0.004,
+        output_per_1000=0.020,
+    ),
+    "anthropic.claude-fable-5-1": TokenPrices(
+        input_per_1000=0.010,
+        output_per_1000=0.050,
+    ),
+    "xai.grok-4.7": TokenPrices(
+        input_per_1000=0.0022,
+        output_per_1000=0.0066,
+    ),
+    "xai.grok-4.6": TokenPrices(
+        input_per_1000=0.002,
+        output_per_1000=0.0066,
+    ),
+    "openai.gpt-5.4": TokenPrices(
+        input_per_1000=0.0033,
+        output_per_1000=0.0198,
+    ),
+    "openai.gpt-6-astra": TokenPrices(
+        input_per_1000=0.010,
+        output_per_1000=0.075,
+    ),
+    "openai.gpt-5.6-terra": TokenPrices(
+        input_per_1000=0.00264,
+        output_per_1000=0.02376,
+    ),
+    "openai.gpt-5.6-luna": TokenPrices(
+        input_per_1000=0.00053,
+        output_per_1000=0.00238,
+    ),
+    "moonshotai.kimi-k3": TokenPrices(
+        input_per_1000=0.0033,
+        output_per_1000=0.0165,
     ),
     "anthropic.claude-opus-4-20250514-v1:0": TokenPrices(
         input_per_1000=0.005,
