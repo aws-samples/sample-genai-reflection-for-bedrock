@@ -7,6 +7,7 @@ import sys
 
 from loguru import logger
 
+from bhive import xml_output as xml_output
 from bhive.client import Hive as Hive
 from bhive.config import HiveConfig as HiveConfig
 from bhive.config import TrialConfig as TrialConfig
