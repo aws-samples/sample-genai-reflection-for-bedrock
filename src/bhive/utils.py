@@ -25,12 +25,21 @@ def parse_bedrock_output(response: dict) -> tuple[str, str]:
     logger.debug(f"Request statistics:\n{response['usage']}\n{response['metrics']}")
 
     text_replies = [reply for reply in replies if "text" in reply]  # handle claude 3.7 reasoning
-    text_answer = text_replies[0]["text"]
+    # Some reasoning models (e.g. xAI Grok on Bedrock) return ONLY a reasoning
+    # block in a turn, with no text content. Treat that as an empty answer rather
+    # than raising IndexError, so a single odd turn can't abort the whole run.
+    text_answer = text_replies[0]["text"] if text_replies else ""
 
     thinking_replies = [reply for reply in replies if "reasoningContent" in reply]
     thinking = ""
     if thinking_replies:
-        thinking = thinking_replies[0]["reasoningContent"]["reasoningText"]["text"]
+        # The Bedrock reasoningContent block is a union: it carries EITHER
+        # `reasoningText` (plaintext reasoning) OR `redactedContent` (opaque bytes).
+        # Grok returns the redacted variant, so a hard ["reasoningText"]["text"]
+        # access raises KeyError on every call. Fetch defensively and fall back to
+        # empty thinking when the plaintext form is absent.
+        reasoning = thinking_replies[0].get("reasoningContent", {})
+        thinking = reasoning.get("reasoningText", {}).get("text", "")
 
     return text_answer, thinking
 
