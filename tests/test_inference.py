@@ -1,6 +1,7 @@
 import pytest
 import pydantic
 from bhive import client, config
+from bhive.utils import parse_bedrock_output
 
 
 @pytest.fixture
@@ -349,3 +350,50 @@ def should_reject_negative_max_reasoning_seconds():
 def should_reject_zero_max_reasoning_seconds():
     with pytest.raises(Exception):
         config.HiveConfig(bedrock_model_ids=["model-a"], max_reasoning_seconds=0.0)
+
+
+# --- parse_bedrock_output: robustness to reasoning-model output shapes --------
+def _resp(content: list) -> dict:
+    return {"output": {"message": {"content": content}}, "usage": {}, "metrics": {}}
+
+
+def should_parse_plain_text_response():
+    answer, thinking = parse_bedrock_output(_resp([{"text": "HELLO"}]))
+    assert answer == "HELLO"
+    assert thinking == ""
+
+
+def should_parse_claude_style_reasoning_then_text():
+    answer, thinking = parse_bedrock_output(
+        _resp(
+            [
+                {"reasoningContent": {"reasoningText": {"text": "thinking..."}}},
+                {"text": "ANSWER"},
+            ]
+        )
+    )
+    assert answer == "ANSWER"
+    assert thinking == "thinking..."
+
+
+def should_not_raise_on_redacted_reasoning_without_reasoning_text():
+    # Some reasoning models (e.g. xAI Grok on Bedrock) return reasoningContent with
+    # redactedContent instead of reasoningText; the old code raised KeyError here.
+    answer, thinking = parse_bedrock_output(
+        _resp(
+            [
+                {"reasoningContent": {"redactedContent": b"xxxx"}},
+                {"text": "ANSWER"},
+            ]
+        )
+    )
+    assert answer == "ANSWER"
+    assert thinking == ""
+
+
+def should_not_raise_on_reasoning_only_turn_without_text_block():
+    answer, thinking = parse_bedrock_output(
+        _resp([{"reasoningContent": {"redactedContent": b"xxxx"}}])
+    )
+    assert answer == ""
+    assert thinking == ""
